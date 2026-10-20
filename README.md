@@ -37,6 +37,20 @@ O modo voz é o coração do Prompter. Em vez de rolar numa velocidade fixa que 
 - **Sem controle remoto, pedal ou ajuste de velocidade:** você só fala. Se quiser reposicionar, role no trackpad.
 - **No próprio Mac:** o reconhecimento de voz roda on-device, em português, inglês, espanhol, francês, italiano ou alemão, conforme o idioma do roteiro.
 
+## Interface
+
+<p align="center">
+  <img src="docs/teleprompter-mac-fixo-junto-da-camera.jpg" alt="Teleprompter para Mac fixo no topo da tela, junto da câmera, com a gravação em 16:9" width="820">
+  <br><sub>Teleprompter fixo no topo da tela, junto da câmera, gravando em 16:9.</sub>
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/gravar-reels-no-mac-9x16.jpg" alt="Gravar Reels no Mac com teleprompter no formato vertical 9:16"><br><sub>Reels, TikTok e Shorts em 9:16.</sub></td>
+    <td width="50%"><img src="docs/gravar-videoaula-no-mac-tela-e-camera.jpg" alt="Gravar videoaula no Mac: tela com a câmera em destaque e teleprompter"><br><sub>Videoaula: tela com a câmera em destaque.</sub></td>
+  </tr>
+</table>
+
 ## Por que usar o Prompter como teleprompter no Mac
 
 - **100% gratuito de verdade:** nenhum recurso fica atrás de pagamento. Código aberto no GitHub.
