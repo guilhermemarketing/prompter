@@ -261,6 +261,11 @@ Prompter foi criado por [Gui, do gui.marketing](https://gui.marketing).
 
 **Prompter is a free, open-source automatic teleprompter for Mac: it follows your voice and records your camera, screen and microphone.** You can record Reels, YouTube videos, video lessons and tutorials straight from your Mac, or hide the teleprompter and use it as a plain camera and screen recorder. There is no subscription, no in-app purchase and no watermark. It is native Swift for Apple Silicon Macs running macOS 26 or later, and everything runs on-device.
 
+<p align="center">
+  <img src="docs/automatic-teleprompter-for-mac.gif" alt="Automatic teleprompter for Mac: Prompter follows your voice word by word and waits while you improvise" width="820">
+  <br><em>Automatic teleprompter: you talk and the text follows. Improvise and it waits; get back to the script and it finds its place.</em>
+</p>
+
 - **Automatic, voice-follow teleprompter:** on-device speech recognition scrolls the script as you read, karaoke-style. If you improvise, it waits; when you return to the script, it finds its place. A constant-speed mode is also available.
 - **Flexible placement:** the text can sit over the camera preview, float above other apps, or stay pinned at the top of the screen next to the camera.
 - **Camera recording:** 16:9, 9:16 and 4:5 crops with live preview, up to 4K at 60 fps.
