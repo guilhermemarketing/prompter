@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Prompter</string>
+	<key>CFBundleDisplayName</key>
+	<string>Prompter</string>
+	<key>CFBundleIdentifier</key>
+	<string>marketing.gui.prompter</string>
+	<key>CFBundleExecutable</key>
+	<string>Prompter</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.0</string>
+	<key>CFBundleVersion</key>
+	<string>2</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>pt-BR</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>26.0</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.video</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSCameraUsageDescription</key>
+	<string>O Prompter usa a câmera para mostrar a prévia e gravar seu vídeo.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>O Prompter usa o microfone para gravar o áudio do seu vídeo.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>O Prompter reconhece sua fala no próprio Mac para o texto acompanhar o que você diz.</string>
+</dict>
+</plist>
