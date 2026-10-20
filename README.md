@@ -17,7 +17,13 @@
 
 **Prompter é um teleprompter grátis para macOS que rola sozinho conforme você fala e grava câmera, tela e microfone no mesmo app.** Dá para gravar Reels, vídeos para o YouTube e aulas direto do Mac, lendo o roteiro sem desviar o olhar da câmera. É open-source (MIT), sem assinatura, sem compras dentro do app e sem marca d'água. Feito em Swift para Mac com Apple Silicon (M1, M2, M3, M4 e posteriores), com todo o processamento no próprio computador.
 
-Criado por **[Gui · gui.marketing](https://gui.marketing)**. Se o Prompter te ajudou, deixe uma ⭐ no repositório: isso ajuda outras pessoas a encontrá-lo.
+Criado por **[Gui · gui.marketing](https://gui.marketing)**.
+
+<p align="center">
+  <a href="https://github.com/guilhermemarketing/prompter/stargazers"><img src="https://img.shields.io/github/stars/guilhermemarketing/prompter?style=social" alt="Dê uma estrela ao Prompter no GitHub"></a>
+  <br>
+  <sub>Se o Prompter te ajudou, deixe uma ⭐: isso ajuda outras pessoas a encontrar este teleprompter grátis.</sub>
+</p>
 
 *English below: [free teleprompter for Mac](#english).*
 
@@ -207,6 +213,12 @@ Sim. Escolha o modo Tela e grave a tela inteira, uma janela ou uma área, com a 
 - **`DemoRenderer`:** gera a animação deste README com o mesmo código do app (`--demo-render ROTEIRO VOZ PASTA`).
 
 `@ViewState` é um alias de `SwiftUI.State` para compilar sem o plugin de macros, que só acompanha o Xcode.
+
+## Histórico de estrelas
+
+<a href="https://star-history.com/#guilhermemarketing/prompter&Date">
+  <img src="https://api.star-history.com/svg?repos=guilhermemarketing/prompter&type=Date" alt="Histórico de estrelas do Prompter no GitHub" width="600">
+</a>
 
 ## Licença e autoria
 
