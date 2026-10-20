@@ -72,15 +72,31 @@ Escolha o formato 9:16 e grave Reels, TikTok e Shorts direto do Mac, já recorta
   - fila de áudio sem descartes.
 - **Cor fiel:** os arquivos saem marcados como sRGB e ficam iguais à prévia.
 
-## Requisitos
+## Baixar o teleprompter grátis para Mac
 
-- macOS 26 ou posterior.
-- Mac com Apple Silicon.
-- Command Line Tools do Xcode (`xcode-select --install`). O Xcode completo não é necessário.
+<p align="center"><a href="https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip"><strong>⬇ Baixar o Prompter para macOS (grátis)</strong></a></p>
+
+Requisitos: Mac com Apple Silicon (M1 ou posterior) e macOS 26 ou posterior.
 
 ## Como instalar
 
-Por enquanto, o app é instalado a partir do código-fonte:
+1. Baixe o [Prompter.zip](https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip) e abra o arquivo para descompactar.
+2. Arraste o **Prompter** para a pasta **Aplicativos**.
+3. Abra o app. Como ele não é distribuído pela App Store, o macOS avisa que não pode verificar o desenvolvedor na primeira vez. Clique em **OK**.
+4. Vá em **Ajustes do Sistema → Privacidade e Segurança**, role até o aviso sobre o Prompter e clique em **Abrir Mesmo Assim**. Isso só é preciso uma vez.
+5. Permita câmera e microfone. Para gravar a tela, permita também Gravação de Tela.
+
+Se preferir o Terminal, este comando libera o app no lugar dos passos 3 e 4:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Prompter.app
+```
+
+Todas as versões e notas de mudança ficam em [Releases](https://github.com/guilhermemarketing/prompter/releases).
+
+## Compilar a partir do código-fonte
+
+Precisa das Command Line Tools do Xcode (`xcode-select --install`). O Xcode completo não é necessário.
 
 ```bash
 git clone https://github.com/guilhermemarketing/prompter.git
@@ -145,51 +161,39 @@ Os vídeos ficam em `~/Movies/Prompter/`.
 
 ### O que é um teleprompter?
 
-Teleprompter é um aparelho ou programa que mostra o texto que você vai falar perto da câmera, rolando conforme a leitura. Ele permite gravar vídeos, aulas, apresentações e lives lendo o roteiro sem desviar o olhar da lente e sem decorar o texto. No computador, o teleprompter é um app que exibe o roteiro na tela, de preferência logo abaixo da webcam.
+Teleprompter é um aparelho ou programa que exibe o roteiro perto da câmera e o rola enquanto você lê. Use-o para gravar vídeos, aulas e apresentações olhando para a lente, sem decorar nada. No Mac, o Prompter mostra o roteiro logo abaixo da webcam.
 
 ### O que é um teleprompter automático?
 
-É um teleprompter que rola o texto sozinho, acompanhando a voz de quem fala, em vez de usar velocidade fixa ou um operador. No Prompter, o reconhecimento de fala identifica a palavra em que você está e leva essa linha para perto da câmera. Assim você pode pausar, acelerar ou improvisar sem perder o lugar.
+Teleprompter automático rola o texto sozinho, acompanhando a sua voz, sem velocidade fixa nem operador. No Prompter, o reconhecimento de fala localiza a palavra que você diz e sobe a linha até a câmera. Improvise ou pause à vontade: ele espera e retoma.
+
+### Qual o melhor teleprompter para Mac?
+
+O melhor teleprompter para Mac rola pela sua voz, mantém o texto junto da câmera e grava o vídeo no mesmo app. O Prompter reúne tudo isso de graça, com gravação em até 4K, Reels em 9:16 e processamento no próprio Mac. Instale e compare.
 
 ### Existe teleprompter grátis para Mac?
 
-Sim. O Prompter é um teleprompter grátis para Mac, open-source sob licença MIT. Muitos apps de teleprompter para macOS aparecem como gratuitos na App Store, mas cobram assinatura ou compras dentro do app para liberar recursos. No Prompter não há plano pago, limite de tempo nem marca d'água: tudo, inclusive a gravação em 4K e a rolagem por voz, é gratuito.
+Sim. O Prompter é um teleprompter grátis para Mac, open-source, sem assinatura, compras no app ou marca d'água. Muitos apps gratuitos cobram para liberar recursos; no Prompter, rolagem pela voz, gravação em 4K e gravação de tela já vêm inclusas. Instale e use sem limite.
+
+### Como gravar Reels no Mac?
+
+Para gravar Reels no Mac, abra o Prompter, escolha o formato 9:16 e cole o roteiro com a tecla E. Ative o modo voz com V e grave com R. O vídeo sai vertical, em até 4K, pronto para Instagram, TikTok e YouTube Shorts.
 
 ### Como usar teleprompter no Mac?
 
-1. Instale o Prompter (veja [Como instalar](#como-instalar)) e permita o acesso à câmera e ao microfone.
-2. Cole o seu roteiro no editor (tecla E).
-3. Escolha onde o texto aparece (tecla T). Fixo no topo, junto da câmera, é a posição que mais mantém o olhar na lente.
-4. Ative o modo voz (tecla V) para o texto acompanhar a sua fala, ou use o modo tempo para rolagem constante.
-5. Escolha o formato (16:9, 9:16 ou 4:5) e grave com R. O vídeo vai para `~/Movies/Prompter/`.
-
-### Qual a diferença entre o Prompter e outros teleprompters para Mac?
-
-O Prompter junta três coisas que costumam exigir apps separados: teleprompter que segue a voz, gravação da câmera e gravação da tela com a câmera em destaque. Ele também corrige a sincronia entre boca e voz depois de cada gravação. Por ser open-source, qualquer pessoa pode conferir o código, sugerir melhorias ou adaptar o app.
+Instale o Prompter, permita câmera e microfone e cole o roteiro com a tecla E. Deixe o texto junto da câmera com T, ative o modo voz com V e grave com R. Fale naturalmente: o texto acompanha você e o vídeo vai para Filmes.
 
 ### O teleprompter precisa de internet?
 
-Não. O reconhecimento de voz roda no próprio Mac. A internet só é usada uma vez, quando o macOS baixa o modelo de voz da Apple para o idioma do roteiro.
+Não. O reconhecimento de voz do Prompter roda no próprio Mac, e o roteiro, a voz e os vídeos nunca saem do computador. A internet só é usada uma vez, quando o macOS baixa o modelo de voz da Apple para o idioma do roteiro.
 
-### Funciona em MacBook e iMac?
+### O Prompter funciona em MacBook e iMac?
 
-Funciona em qualquer Mac com Apple Silicon e macOS 26 ou posterior. Ele usa a câmera embutida ou uma webcam USB, e o microfone embutido ou um externo.
-
-### O teleprompter rola sozinho enquanto eu falo?
-
-Sim, no modo voz. O app reconhece a fala no próprio Mac e avança o roteiro conforme você lê. Se preferir, o modo tempo rola o texto em velocidade fixa.
+Sim. O Prompter funciona em MacBook, iMac, Mac mini e Mac Studio com Apple Silicon e macOS 26 ou posterior. Use a câmera embutida ou uma webcam USB e o microfone do Mac ou um externo. Deixe o texto fixo junto da câmera embutida.
 
 ### Dá para gravar a tela e a câmera ao mesmo tempo?
 
-Sim. O Prompter grava a tela, uma janela ou uma área, com a câmera em destaque. Ele também pode salvar a tela e a câmera em arquivos separados para edição.
-
-### Dá para gravar Reels direto do Mac?
-
-Sim. No formato 9:16, o Prompter grava o vídeo vertical já recortado para Reels, TikTok e Shorts, em até 4K, com o teleprompter automático na tela. Para o feed, use 4:5; para o YouTube, 16:9.
-
-### Meu roteiro é enviado para algum servidor?
-
-Não. O texto, a voz e os vídeos ficam no seu Mac.
+Sim. Escolha o modo Tela e grave a tela inteira, uma janela ou uma área, com a sua câmera em destaque em círculo, quadrado ou retângulo. Arraste o destaque pela prévia e, para editar depois, salve também a tela e a câmera em arquivos separados.
 
 ## Arquitetura
 
@@ -231,11 +235,21 @@ Prompter foi criado por [Gui, do gui.marketing](https://gui.marketing).
   - automatic lip-sync correction after each recording;
   - drop-free audio pipeline.
 
-**Is there a free teleprompter for Mac?** Yes. Prompter is completely free and open-source (MIT). It has no paid tier, time limit or watermark, and 4K recording and voice scrolling are included.
+### Frequently asked questions
 
-**What is a teleprompter?** A teleprompter shows your script near the camera and scrolls it as you read. You can record videos, classes and presentations while keeping your eyes on the lens.
+#### What is an automatic teleprompter?
 
-**Install:** you need the Xcode Command Line Tools. Clone the repository and run `./build.sh --install`. The *Assinatura estável* section above shows how to create a local signing certificate, so macOS keeps camera, microphone and screen permissions across builds.
+An automatic teleprompter scrolls the script by itself, following your voice instead of a fixed speed or an operator. Prompter uses on-device speech recognition to find the word you are saying and moves that line up to the camera. Improvise or pause freely: it waits.
+
+#### What is the best teleprompter for Mac?
+
+The best teleprompter for Mac follows your voice, keeps the script next to the camera and records the video in the same app. Prompter does all of this for free, with up to 4K recording, vertical 9:16 Reels and on-device processing. Install it and compare.
+
+#### How do I record Reels on a Mac?
+
+To record Reels on a Mac, open Prompter, choose the 9:16 format and paste your script with the E key. Turn on voice mode with V and record with R. The vertical video comes out in 4K, ready for Instagram, TikTok and YouTube Shorts.
+
+**Install:** [download Prompter.zip](https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip), unzip it and move Prompter to Applications. On first launch, macOS cannot verify the developer: open **System Settings → Privacy & Security** and click **Open Anyway**. To build from source, you need the Xcode Command Line Tools: clone the repository and run `./build.sh --install`. The *Assinatura estável* section above shows how to create a local signing certificate, so macOS keeps camera, microphone and screen permissions across builds.
 
 The interface is in Brazilian Portuguese.
 
