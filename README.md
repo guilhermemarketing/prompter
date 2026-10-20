@@ -1,8 +1,21 @@
 # Prompter: teleprompter grátis para macOS
 
+<p align="center">
+  <img src="docs/banner.png" alt="Prompter, teleprompter grátis para macOS que segue a voz e grava câmera e tela" width="820">
+</p>
+
+<p align="center">
+  <a href="https://github.com/guilhermemarketing/prompter/stargazers"><img src="https://img.shields.io/github/stars/guilhermemarketing/prompter?style=flat&logo=github&label=estrelas" alt="Estrelas no GitHub"></a>
+  <img src="https://img.shields.io/badge/macOS-26%2B-000000?logo=apple" alt="macOS 26 ou posterior">
+  <img src="https://img.shields.io/badge/Apple%20Silicon-M1%2B-555555" alt="Apple Silicon">
+  <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/guilhermemarketing/prompter?label=licen%C3%A7a" alt="Licença MIT"></a>
+  <img src="https://img.shields.io/badge/pre%C3%A7o-gr%C3%A1tis-2ea44f" alt="Grátis">
+</p>
+
 **Prompter é um teleprompter grátis para macOS que acompanha a sua voz e grava câmera, tela e microfone no mesmo app.** É open-source (MIT), sem assinatura, sem compras dentro do app e sem marca d'água. Feito em Swift para Mac com Apple Silicon (M1, M2, M3, M4 e posteriores), com todo o processamento no próprio computador.
 
-Criado por **[Gui · gui.marketing](https://gui.marketing)**.
+Criado por **[Gui · gui.marketing](https://gui.marketing)**. Se o Prompter te ajudou, deixe uma ⭐ no repositório: isso ajuda outras pessoas a encontrá-lo.
 
 *English below: [free teleprompter for Mac](#english).*
 
@@ -114,9 +127,29 @@ Os vídeos ficam em `~/Movies/Prompter/`.
 
 ## Perguntas frequentes
 
-### O Prompter é mesmo um teleprompter grátis para macOS?
+### O que é um teleprompter?
 
-Sim. O Prompter é gratuito e open-source, sob licença MIT. Não tem plano pago, assinatura, limite de tempo nem marca d'água nos vídeos.
+Teleprompter é um aparelho ou programa que mostra o texto que você vai falar perto da câmera, rolando conforme a leitura. Ele permite gravar vídeos, aulas, apresentações e lives lendo o roteiro sem desviar o olhar da lente e sem decorar o texto. No computador, o teleprompter é um app que exibe o roteiro na tela, de preferência logo abaixo da webcam.
+
+### Existe teleprompter grátis para Mac?
+
+Sim. O Prompter é um teleprompter grátis para Mac, open-source sob licença MIT. Muitos apps de teleprompter para macOS aparecem como gratuitos na App Store, mas cobram assinatura ou compras dentro do app para liberar recursos. No Prompter não há plano pago, limite de tempo nem marca d'água: tudo, inclusive a gravação em 4K e a rolagem por voz, é gratuito.
+
+### Como usar teleprompter no Mac?
+
+1. Instale o Prompter (veja [Como instalar](#como-instalar)) e permita o acesso à câmera e ao microfone.
+2. Cole o seu roteiro no editor (tecla E).
+3. Escolha onde o texto aparece (tecla T). Fixo no topo, junto da câmera, é a posição que mais mantém o olhar na lente.
+4. Ative o modo voz (tecla V) para o texto acompanhar a sua fala, ou use o modo tempo para rolagem constante.
+5. Escolha o formato (16:9, 9:16 ou 4:5) e grave com R. O vídeo vai para `~/Movies/Prompter/`.
+
+### Qual a diferença entre o Prompter e outros teleprompters para Mac?
+
+O Prompter junta três coisas que costumam exigir apps separados: teleprompter que segue a voz, gravação da câmera e gravação da tela com a câmera em destaque. Ele também corrige a sincronia entre boca e voz depois de cada gravação. Por ser open-source, qualquer pessoa pode conferir o código, sugerir melhorias ou adaptar o app.
+
+### O teleprompter precisa de internet?
+
+Não. O reconhecimento de voz roda no próprio Mac. A internet só é usada uma vez, quando o macOS baixa o modelo de voz da Apple para o idioma do roteiro.
 
 ### Funciona em MacBook e iMac?
 
@@ -177,8 +210,12 @@ Prompter foi criado por [Gui, do gui.marketing](https://gui.marketing).
   - automatic lip-sync correction after each recording;
   - drop-free audio pipeline.
 
+**Is there a free teleprompter for Mac?** Yes. Prompter is completely free and open-source (MIT). It has no paid tier, time limit or watermark, and 4K recording and voice scrolling are included.
+
+**What is a teleprompter?** A teleprompter shows your script near the camera and scrolls it as you read. You can record videos, classes and presentations while keeping your eyes on the lens.
+
 **Install:** you need the Xcode Command Line Tools. Clone the repository and run `./build.sh --install`. The *Assinatura estável* section above shows how to create a local signing certificate, so macOS keeps camera, microphone and screen permissions across builds.
 
 The interface is in Brazilian Portuguese.
 
-Created by [Gui · gui.marketing](https://gui.marketing). License: MIT.
+Created by [Gui · gui.marketing](https://gui.marketing). If Prompter helps you, please ⭐ the repository. License: MIT.
