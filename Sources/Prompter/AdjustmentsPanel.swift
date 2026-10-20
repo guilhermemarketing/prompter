@@ -56,8 +56,8 @@ struct LightButton: View {
         }
         .buttonStyle(.plain)
         .help(capture.settings.autoLight
-              ? "Luz automática ligada: exposição e sombras ajustadas pelo rosto  L"
-              : "Luz automática desligada  L")
+              ? L("Luz automática ligada: exposição e sombras ajustadas pelo rosto  L", "Auto light on: exposure and shadows follow your face  L")
+              : L("Luz automática desligada  L", "Auto light off  L"))
         .onHover { hovering = $0 }
     }
 }
@@ -83,7 +83,7 @@ struct AdjustmentsButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help("Ajustes de cor e presets")
+        .help(L("Ajustes de cor e presets", "Color adjustments and presets"))
         .onHover { hovering = $0 }
         .popover(isPresented: $app.showAdjustmentsPanel, arrowEdge: .top) {
             AdjustmentsPanel()
@@ -105,9 +105,9 @@ struct AdjustmentsPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Ajustes de cor").font(.system(size: 15, weight: .semibold))
+                Text(L("Ajustes de cor", "Color adjustments")).font(.system(size: 15, weight: .semibold))
                 Spacer()
-                Button("Redefinir") { capture.settings.adjustments = .neutral }
+                Button(L("Redefinir", "Reset")) { capture.settings.adjustments = .neutral }
                     .buttonStyle(.borderless)
                     .disabled(capture.settings.adjustments.isNeutral)
             }
@@ -119,23 +119,23 @@ struct AdjustmentsPanel: View {
             }
 
             VStack(spacing: 10) {
-                AdjustmentRow(title: "Contraste", value: adjustments.contrast, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
-                AdjustmentRow(title: "Brilho", value: adjustments.brightness, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
-                AdjustmentRow(title: "Pretos", value: adjustments.blacks, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
-                AdjustmentRow(title: "Sombras", value: adjustments.shadows, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
-                AdjustmentRow(title: "Brancos", value: adjustments.whites, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
-                AdjustmentRow(title: "Nitidez", value: adjustments.sharpness, range: 0...1) { "\(Int(($0 * 100).rounded()))" }
-                AdjustmentRow(title: "Matiz", value: adjustments.hue, range: -180...180) { "\(Int($0.rounded()))°" }
+                AdjustmentRow(title: L("Contraste", "Contrast"), value: adjustments.contrast, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
+                AdjustmentRow(title: L("Brilho", "Brightness"), value: adjustments.brightness, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
+                AdjustmentRow(title: L("Pretos", "Blacks"), value: adjustments.blacks, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
+                AdjustmentRow(title: L("Sombras", "Shadows"), value: adjustments.shadows, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
+                AdjustmentRow(title: L("Brancos", "Whites"), value: adjustments.whites, range: -1...1) { "\(Int(($0 * 100).rounded()))" }
+                AdjustmentRow(title: L("Nitidez", "Sharpness"), value: adjustments.sharpness, range: 0...1) { "\(Int(($0 * 100).rounded()))" }
+                AdjustmentRow(title: L("Matiz", "Hue"), value: adjustments.hue, range: -180...180) { "\(Int($0.rounded()))°" }
             }
 
             HStack(spacing: 8) {
-                TextField("Nome do novo preset", text: $newName)
+                TextField(L("Nome do novo preset", "New preset name"), text: $newName)
                     .textFieldStyle(.roundedBorder)
                     .onSubmit(save)
-                Button("Salvar", action: save)
+                Button(L("Salvar", "Save"), action: save)
                     .disabled(newName.trimmingCharacters(in: .whitespaces).isEmpty)
             }
-            Text("Os ajustes valem para a prévia e para a gravação. Clique duas vezes no nome de um ajuste para zerá-lo.")
+            Text(L("Os ajustes valem para a prévia e para a gravação. Clique duas vezes no nome de um ajuste para zerá-lo.", "Adjustments apply to the preview and the recording. Double-click an adjustment's name to reset it."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -165,13 +165,13 @@ struct AdjustmentsPanel: View {
         .buttonStyle(.plain)
         .contextMenu {
             if !preset.builtIn {
-                Button("Atualizar com os ajustes atuais") {
+                Button(L("Atualizar com os ajustes atuais", "Update with current adjustments")) {
                     presets.save(name: preset.name, adjustments: capture.settings.adjustments)
                 }
-                Button("Apagar preset", role: .destructive) { presets.remove(preset) }
+                Button(L("Apagar preset", "Delete preset"), role: .destructive) { presets.remove(preset) }
             }
         }
-        .help(preset.builtIn ? preset.name : "\(preset.name) — clique com o botão direito para editar ou apagar")
+        .help(preset.builtIn ? preset.name : L("\(preset.name) — clique com o botão direito para editar ou apagar", "\(preset.name) — right-click to edit or delete"))
     }
 }
 

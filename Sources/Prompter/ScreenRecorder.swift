@@ -22,8 +22,8 @@ final class ScreenRecorder: NSObject, SCStreamOutput, SCStreamDelegate {
         case notAuthorized, sourceUnavailable
         var errorDescription: String? {
             switch self {
-            case .notAuthorized: "O Prompter precisa da permissão de Gravação de Tela (Ajustes do Sistema › Privacidade e Segurança)."
-            case .sourceUnavailable: "A tela ou janela escolhida não está mais disponível."
+            case .notAuthorized: L("O Prompter precisa da permissão de Gravação de Tela (Ajustes do Sistema › Privacidade e Segurança).", "Prompter needs Screen Recording permission (System Settings › Privacy & Security).")
+            case .sourceUnavailable: L("A tela ou janela escolhida não está mais disponível.", "The chosen screen or window is no longer available.")
             }
         }
     }
@@ -96,7 +96,7 @@ final class ScreenRecorder: NSObject, SCStreamOutput, SCStreamDelegate {
         let displays = content.displays.enumerated().map { index, display in
             let scale = NSScreen.screens.first { $0.displayID == display.displayID }?.backingScaleFactor ?? 2
             return Choice(source: .display(id: display.displayID),
-                          title: content.displays.count == 1 ? "Tela inteira" : "Tela \(index + 1)",
+                          title: content.displays.count == 1 ? L("Tela inteira", "Entire screen") : L("Tela \(index + 1)", "Screen \(index + 1)"),
                           detail: "\(Int(CGFloat(display.width) * scale))×\(Int(CGFloat(display.height) * scale))")
         }
         let windows = content.windows
@@ -107,7 +107,7 @@ final class ScreenRecorder: NSObject, SCStreamOutput, SCStreamDelegate {
             }
             .sorted { ($0.owningApplication?.applicationName ?? "") < ($1.owningApplication?.applicationName ?? "") }
             .map { window in
-                let app = window.owningApplication?.applicationName ?? "Janela"
+                let app = window.owningApplication?.applicationName ?? L("Janela", "Window")
                 return Choice(source: .window(id: window.windowID, title: "\(app) — \(window.title ?? "")"),
                               title: app, detail: window.title ?? "")
             }

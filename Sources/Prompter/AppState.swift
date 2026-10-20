@@ -93,13 +93,13 @@ final class AppState: ObservableObject {
         let wasPlaying = prompter.isPlaying
         pause()
         prompter.setFollowVoice(!prompter.followVoice)
-        show(prompter.followVoice ? "Modo voz: o texto acompanha a sua fala" : "Modo tempo: rolagem em velocidade constante", .info)
+        show(prompter.followVoice ? L("Modo voz: o texto acompanha a sua fala", "Voice mode: the text follows your speech") : L("Modo tempo: rolagem em velocidade constante", "Timed mode: scrolls at a constant speed"), .info)
         if wasPlaying { play() }
     }
 
     private func startListening() {
         guard capture.micAccess == .granted else {
-            show("O modo voz precisa de acesso ao microfone.", .error)
+            show(L("O modo voz precisa de acesso ao microfone.", "Voice mode needs microphone access."), .error)
             prompter.pause()
             return
         }
@@ -110,7 +110,7 @@ final class AppState: ObservableObject {
         listenTask = Task { @MainActor in
             do {
                 try await follower.start(script: script, from: from) {
-                    DispatchQueue.main.async { AppState.shared.show("Baixando o modelo de voz (só na primeira vez)…", .info) }
+                    DispatchQueue.main.async { AppState.shared.show(L("Baixando o modelo de voz (só na primeira vez)…", "Downloading the speech model (first time only)…"), .info) }
                 }
                 guard !Task.isCancelled else { return }
                 voiceStatus = .listening
@@ -134,7 +134,7 @@ final class AppState: ObservableObject {
     /// Importa um ou mais .cube; o último importado já fica ativo.
     func importLUTs() {
         let panel = NSOpenPanel()
-        panel.title = "Importar LUT"
+        panel.title = L("Importar LUT", "Import LUT")
         panel.allowedContentTypes = [UTType(filenameExtension: "cube") ?? .data]
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
@@ -150,9 +150,9 @@ final class AppState: ObservableObject {
             }
         }
         if let first = failures.first {
-            show("Não foi possível importar \(first)", .error)
+            show(L("Não foi possível importar \(first)", "Couldn't import \(first)"), .error)
         } else {
-            show(panel.urls.count == 1 ? "LUT importado" : "\(panel.urls.count) LUTs importados", .info)
+            show(panel.urls.count == 1 ? L("LUT importado", "LUT imported") : L("\(panel.urls.count) LUTs importados", "\(panel.urls.count) LUTs imported"), .info)
         }
         showLUTPanel = true
     }
@@ -183,8 +183,8 @@ final class AppState: ObservableObject {
                 .filter { $0.pathExtension == "mov" }
             : [url]
         // A câmera sem composição é o sinal mais limpo; a composição serve de reserva.
-        let candidates = [files.first { $0.lastPathComponent == "câmera.mov" },
-                          files.first { $0.lastPathComponent == "composição.mov" }].compactMap { $0 }
+        let candidates = [files.first { $0.lastPathComponent == ScreenOutput.camera.fileName },
+                          files.first { $0.lastPathComponent == ScreenOutput.composite.fileName }].compactMap { $0 }
         let references = candidates.isEmpty ? Array(files.prefix(1)) : candidates
         guard !references.isEmpty else { return }
         let cameraID = capture.activeCameraID
@@ -206,14 +206,15 @@ final class AppState: ObservableObject {
                 // Metade do caminho: a próxima sessão tende a parecer com esta, mas varia.
                 let current = capture.cameraLatency[cameraID] ?? 0
                 capture.setLatency(min(max(current + estimate.residual / 2, 0), 0.5), forCamera: cameraID)
-                show("Sincronia labial corrigida nesta gravação (\(estimate.residual > 0 ? "+" : "")\(Int((estimate.residual * 1000).rounded())) ms)", .saved(url))
+                let ms = "\(estimate.residual > 0 ? "+" : "")\(Int((estimate.residual * 1000).rounded())) ms"
+                show(L("Sincronia labial corrigida nesta gravação (\(ms))", "Lip sync corrected in this recording (\(ms))"), .saved(url))
             }
         }
     }
 
     func toggleAutoLight() {
         capture.settings.autoLight.toggle()
-        show(capture.settings.autoLight ? "Luz automática ligada: exposição guiada pelo rosto" : "Luz automática desligada", .info)
+        show(capture.settings.autoLight ? L("Luz automática ligada: exposição guiada pelo rosto", "Auto light on: exposure follows your face") : L("Luz automática desligada", "Auto light off"), .info)
     }
 
     // MARK: Gravação
@@ -232,12 +233,12 @@ final class AppState: ObservableObject {
         if capture.screen.mode == .screen {
             guard ScreenRecorder.isAuthorized, capture.screenStatus == nil else {
                 screenLog.error("gravação recusada: autorizado=\(ScreenRecorder.isAuthorized, privacy: .public) status=\(self.capture.screenStatus ?? "-", privacy: .public)")
-                show(capture.screenStatus ?? "O Prompter precisa da permissão de Gravação de Tela.", .error)
+                show(capture.screenStatus ?? L("O Prompter precisa da permissão de Gravação de Tela.", "Prompter needs Screen Recording permission."), .error)
                 showScreenPanel = true
                 return
             }
         } else if capture.cameraAccess != .granted {
-            show("O Prompter precisa de acesso à câmera.", .error)
+            show(L("O Prompter precisa de acesso à câmera.", "Prompter needs camera access."), .error)
             return
         }
         screenLog.info("gravação iniciada (modo \(self.capture.screen.mode.rawValue, privacy: .public))")
@@ -254,9 +255,9 @@ final class AppState: ObservableObject {
         pause()
         switch result {
         case .success(let url):
-            show("Gravação salva", .saved(url))
+            show(L("Gravação salva", "Recording saved"), .saved(url))
             correctLipSync(at: url)
-        case .failure(let error): show("Não foi possível salvar: \(error.localizedDescription)", .error)
+        case .failure(let error): show(L("Não foi possível salvar: \(error.localizedDescription)", "Couldn't save: \(error.localizedDescription)"), .error)
         }
     }
 
@@ -267,7 +268,7 @@ final class AppState: ObservableObject {
               let text = try? String(contentsOf: url, encoding: .utf8) else { return false }
         pause()
         prompter.script = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        show("Roteiro carregado: \(url.lastPathComponent)", .info)
+        show(L("Roteiro carregado: \(url.lastPathComponent)", "Script loaded: \(url.lastPathComponent)"), .info)
         return true
     }
 

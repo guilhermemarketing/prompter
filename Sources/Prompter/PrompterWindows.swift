@@ -13,9 +13,9 @@ enum PrompterPlacement: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .overlay: "Na janela"
-        case .floating: "Caixa solta"
-        case .top: "Fixo ao topo"
+        case .overlay: L("Na janela", "In the window")
+        case .floating: L("Caixa solta", "Floating box")
+        case .top: L("Fixo ao topo", "Pinned to top")
         }
     }
     var symbol: String {
@@ -120,7 +120,7 @@ struct FloatingPrompterView: View {
                 .allowsHitTesting(false)
         }
         .ignoresSafeArea()
-        .help("Arraste para mover; puxe as bordas para redimensionar")
+        .help(L("Arraste para mover; puxe as bordas para redimensionar", "Drag to move; pull the edges to resize"))
     }
 }
 
@@ -153,7 +153,7 @@ struct PlacementButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help("Teleprompter: \(app.placement.label) — clique para alternar  T")
+        .help(L("Teleprompter: \(app.placement.label) — clique para alternar  T", "Teleprompter: \(app.placement.label) — click to switch  T"))
         .onHover { hovering = $0 }
     }
 }
@@ -169,18 +169,18 @@ struct StyleTuning: View {
         case .plain:
             EmptyView()
         case .cel:
-            AdjustmentRow(title: "Força", value: $capture.settings.celStrength, range: 0...1) {
+            AdjustmentRow(title: L("Força", "Strength"), value: $capture.settings.celStrength, range: 0...1) {
                 "\(Int(($0 * 100).rounded()))%"
             }
-            .help("Intensidade das cores chapadas e sombras. Os contornos ficam sempre inteiros.")
+            .help(L("Intensidade das cores chapadas e sombras. Os contornos ficam sempre inteiros.", "Strength of the flat colors and shadows. Outlines always stay at full strength."))
         case .sticker:
             VStack(spacing: 8) {
-                AdjustmentRow(title: "Borda", value: $capture.settings.stickerBorderWidth,
+                AdjustmentRow(title: L("Borda", "Border"), value: $capture.settings.stickerBorderWidth,
                               range: VideoSettings.stickerBorderRange) { "\(Int($0.rounded())) px" }
-                AdjustmentRow(title: "Contorno", value: $capture.settings.stickerOutlineWidth,
+                AdjustmentRow(title: L("Contorno", "Outline"), value: $capture.settings.stickerOutlineWidth,
                               range: VideoSettings.stickerOutlineRange) { "\(Int($0.rounded())) px" }
             }
-            .help("Espessuras medidas em 1080p; acompanham a resolução escolhida.")
+            .help(L("Espessuras medidas em 1080p; acompanham a resolução escolhida.", "Thicknesses measured at 1080p; they scale with the chosen resolution."))
         }
     }
 }
@@ -206,29 +206,29 @@ struct StyleColorsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Picker("Estilo", selection: $capture.settings.chromaStyle) {
+            Picker(L("Estilo", "Style"), selection: $capture.settings.chromaStyle) {
                 ForEach(ChromaStyle.allCases) { Text($0.label).tag($0) }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
 
             if capture.settings.chromaStyle == .plain {
-                Text("Escolha Cel-shading ou Adesivo para personalizar contornos, bordas e sombras.")
+                Text(L("Escolha Cel-shading ou Adesivo para personalizar contornos, bordas e sombras.", "Choose Cel-shading or Sticker to customize outlines, borders and shadows."))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
                 let sticker = capture.settings.chromaStyle == .sticker
                 StyleTuning()
                 Divider()
-                colorRow("Contorno", sticker ? "Linha externa do adesivo" : "Contorno da silhueta e linhas internas", \.outline)
-                colorRow("Borda", sticker ? "Faixa do adesivo" : "Halo externo ao contorno", \.border)
-                colorRow("Sombra", sticker ? "Sombra dura deslocada" : "Tom das áreas escuras", \.shadow)
+                colorRow(L("Contorno", "Outline"), sticker ? L("Linha externa do adesivo", "Sticker's outer line") : L("Contorno da silhueta e linhas internas", "Silhouette outline and inner lines"), \.outline)
+                colorRow(L("Borda", "Border"), sticker ? L("Faixa do adesivo", "Sticker band") : L("Halo externo ao contorno", "Halo outside the outline"), \.border)
+                colorRow(L("Sombra", "Shadow"), sticker ? L("Sombra dura deslocada", "Offset hard shadow") : L("Tom das áreas escuras", "Tone of dark areas"), \.shadow)
                 HStack {
-                    Text("Opacidade zero desliga o elemento.")
+                    Text(L("Opacidade zero desliga o elemento.", "Zero opacity turns the element off."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()
-                    Button("Restaurar padrão") {
+                    Button(L("Restaurar padrão", "Restore defaults")) {
                         let defaults = VideoSettings()
                         if sticker {
                             capture.settings.stickerColors = .stickerDefault

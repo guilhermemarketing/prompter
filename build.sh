@@ -27,6 +27,8 @@ mkdir -p "$STAGE/Contents/MacOS" "$STAGE/Contents/Resources"
 cp "$BIN" "$STAGE/Contents/MacOS/Prompter"
 cp Resources/Info.plist "$STAGE/Contents/Info.plist"
 cp Resources/AppIcon.icns "$STAGE/Contents/Resources/AppIcon.icns"
+# Localizações: o macOS escolhe português ou inglês (os demais idiomas caem no inglês).
+for LPROJ in Resources/*.lproj; do cp -R "$LPROJ" "$STAGE/Contents/Resources/"; done
 xattr -cr "$STAGE"
 
 # Com um certificado de assinatura no Chaves (veja o README), a identidade do app não muda entre

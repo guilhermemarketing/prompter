@@ -21,24 +21,24 @@ struct ControlsBar: View {
 
     private var textControls: some View {
         HStack(spacing: 2) {
-            BarButton("square.and.pencil", help: "Editar roteiro  E") { app.setEditing(true) }
+            BarButton("square.and.pencil", help: L("Editar roteiro  E", "Edit script  E")) { app.setEditing(true) }
             BarButton(prompter.isPlaying ? "pause.fill" : "play.fill",
-                      help: prompter.followVoice ? "Ouvir e acompanhar  Espaço" : "Rolar ou pausar  Espaço") {
+                      help: prompter.followVoice ? L("Ouvir e acompanhar  Espaço", "Listen and follow  Space") : L("Rolar ou pausar  Espaço", "Scroll or pause  Space")) {
                 app.togglePlay()
             }
             VoiceButton()
             PlacementButton()
             if !prompter.followVoice {
-                BarButton("tortoise.fill", help: "Mais devagar  ↓") { prompter.adjustSpeed(-1) }
+                BarButton("tortoise.fill", help: L("Mais devagar  ↓", "Slower  ↓")) { prompter.adjustSpeed(-1) }
                 Text("\(prompter.speed)")
                     .font(.system(size: 13, weight: .semibold).monospacedDigit())
                     .foregroundStyle(.secondary)
                     .frame(width: 20)
-                    .help("Velocidade")
-                BarButton("hare.fill", help: "Mais rápido  ↑") { prompter.adjustSpeed(1) }
+                    .help(L("Velocidade", "Speed"))
+                BarButton("hare.fill", help: L("Mais rápido  ↑", "Faster  ↑")) { prompter.adjustSpeed(1) }
             }
-            BarButton("textformat.size.smaller", help: "Texto menor  ⌘−") { prompter.adjustFont(-4) }
-            BarButton("textformat.size.larger", help: "Texto maior  ⌘=") { prompter.adjustFont(4) }
+            BarButton("textformat.size.smaller", help: L("Texto menor  ⌘−", "Smaller text  ⌘−")) { prompter.adjustFont(-4) }
+            BarButton("textformat.size.larger", help: L("Texto maior  ⌘=", "Larger text  ⌘=")) { prompter.adjustFont(4) }
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
@@ -49,7 +49,7 @@ struct ControlsBar: View {
         HStack(spacing: 2) {
             MicLevel(meter: capture.meter, enabled: capture.micAccess == .granted)
             if capture.cameras.count > 1 {
-                BarButton("arrow.triangle.2.circlepath.camera", help: "Trocar câmera") { capture.nextCamera() }
+                BarButton("arrow.triangle.2.circlepath.camera", help: L("Trocar câmera", "Switch camera")) { capture.nextCamera() }
                     .disabled(capture.isRecording)
             }
             ScreenButton()
@@ -110,8 +110,8 @@ struct VoiceButton: View {
         }
         .buttonStyle(.plain)
         .help(prompter.followVoice
-              ? "Modo voz ligado: o texto acompanha a sua fala  V"
-              : "Modo tempo: rolagem em velocidade constante  V")
+              ? L("Modo voz ligado: o texto acompanha a sua fala  V", "Voice mode on: the text follows your speech  V")
+              : L("Modo tempo: rolagem em velocidade constante  V", "Timed mode: constant-speed scrolling  V"))
         .onHover { hovering = $0 }
     }
 }
@@ -132,7 +132,7 @@ struct RecordButton: View {
             .contentShape(Circle())
         }
         .buttonStyle(.plain)
-        .help(active ? "Parar  R" : "Gravar  R")
+        .help(active ? L("Parar  R", "Stop  R") : L("Gravar  R", "Record  R"))
         .animation(.snappy(duration: 0.25), value: active)
     }
 }
@@ -156,7 +156,7 @@ struct MicLevel: View {
                 }
         }
         .padding(.horizontal, 8)
-        .help(enabled ? "Nível do microfone" : "Sem acesso ao microfone — verifique em Ajustes do Sistema")
+        .help(enabled ? L("Nível do microfone", "Microphone level") : L("Sem acesso ao microfone — verifique em Ajustes do Sistema", "No microphone access — check System Settings"))
     }
 }
 
@@ -183,7 +183,7 @@ struct AspectBadge: View {
         }
         .buttonStyle(.plain)
         .disabled(capture.isRecording)
-        .help("Formato \(aspect.rawValue) — clique para alternar  F")
+        .help(L("Formato \(aspect.rawValue) — clique para alternar  F", "Format \(aspect.rawValue) — click to switch  F"))
         .onHover { hovering = $0 }
     }
 }
@@ -216,7 +216,7 @@ struct FormatBadge: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help("Resolução, taxa de quadros e fundo")
+        .help(L("Resolução, taxa de quadros e fundo", "Resolution, frame rate and background"))
         .onHover { hovering = $0 }
         .popover(isPresented: $app.showFormatPanel, arrowEdge: .top) {
             FormatPanel()
@@ -233,20 +233,20 @@ struct FormatPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            section("Formato") {
+            section(L("Formato", "Format")) {
                 Segments(options: AspectRatio.allCases, selection: $capture.settings.aspect) { Text($0.rawValue) }
             }
-            section("Resolução") {
+            section(L("Resolução", "Resolution")) {
                 Segments(options: Resolution.allCases,
                          selection: Binding(get: { capture.effective.resolution }, set: { capture.settings.resolution = $0 }),
                          isEnabled: { capture.supportedResolutions.contains($0) }) { Text($0.rawValue) }
             }
-            section("Taxa de quadros") {
+            section(L("Taxa de quadros", "Frame rate")) {
                 Segments(options: VideoSettings.frameRates,
                          selection: Binding(get: { capture.effective.frameRate }, set: { capture.settings.frameRate = $0 }),
                          isEnabled: { capture.supportedFrameRates.contains($0) }) { Text("\($0)") }
             }
-            section("Fundo chroma key") {
+            section(L("Fundo chroma key", "Chroma key background")) {
                 Segments(options: ChromaBackground.allCases, selection: $capture.settings.background) { background in
                     if let rgb = background.rgb {
                         Circle()
@@ -259,7 +259,7 @@ struct FormatPanel: View {
                     }
                 }
             }
-            section("Estilo do recorte") {
+            section(L("Estilo do recorte", "Cutout style")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Segments(options: ChromaStyle.allCases, selection: $capture.settings.chromaStyle) {
                         Text($0.label).font(.system(size: 13, weight: .semibold))
@@ -269,15 +269,15 @@ struct FormatPanel: View {
                         HStack(spacing: 10) {
                             StyleSwatches(colors: capture.settings.styleColors)
                             Spacer()
-                            Button("Personalizar estilo…") { openWindow(id: "styleColors") }
+                            Button(L("Personalizar estilo…", "Customize style…")) { openWindow(id: "styleColors") }
                                 .buttonStyle(.borderless)
                         }
                     }
                 }
             }
-            section("Qualidade") {
+            section(L("Qualidade", "Quality")) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Picker("Qualidade", selection: $capture.settings.quality) {
+                    Picker(L("Qualidade", "Quality"), selection: $capture.settings.quality) {
                         ForEach(QualityPreset.allCases) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.menu)
@@ -297,15 +297,16 @@ struct FormatPanel: View {
                     }
                 }
             }
-            section("Sincronia da câmera") {
+            section(L("Sincronia da câmera", "Camera sync")) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Compensação atual: \(Int(((capture.activeLatency ?? 0) * 1000).rounded())) ms. Depois de cada gravação o app confere a boca × voz e corrige o arquivo sozinho.")
+                    Text(L("Compensação atual: \(Int(((capture.activeLatency ?? 0) * 1000).rounded())) ms. Depois de cada gravação o app confere a boca × voz e corrige o arquivo sozinho.",
+                       "Current compensation: \(Int(((capture.activeLatency ?? 0) * 1000).rounded())) ms. After each recording, the app checks lips against voice and fixes the file automatically."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    AdjustmentRow(title: "Ajuste fino",
+                    AdjustmentRow(title: L("Ajuste fino", "Fine-tune"),
                                   value: Binding(get: { capture.activeTrim * 1000 }, set: { capture.setTrim($0 / 1000) }),
                                   range: -150...150) { "\($0 >= 0 ? "+" : "")\(Int($0.rounded())) ms" }
-                    Text("Se a voz parece vir depois da boca, puxe para a esquerda; se vem antes, para a direita. Vale para as próximas gravações.")
+                    Text(L("Se a voz parece vir depois da boca, puxe para a esquerda; se vem antes, para a direita. Vale para as próximas gravações.", "If the voice seems to come after the lips, drag left; if before, drag right. Applies to future recordings."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -328,9 +329,9 @@ struct FormatPanel: View {
         let perMinute = settings.megabytesPerMinute >= 1000
             ? String(format: "%.1f GB", settings.megabytesPerMinute / 1000)
             : "\(Int(settings.megabytesPerMinute.rounded())) MB"
-        var text = "\(Int(size.width))×\(Int(size.height)) · \(codec) · \(Int(settings.videoMbps)) Mbps · ~\(perMinute) por minuto."
+        var text = "\(Int(size.width))×\(Int(size.height)) · \(codec) · \(Int(settings.videoMbps)) Mbps · ~\(perMinute) " + L("por minuto.", "per minute.")
         if settings.background != .none {
-            text += " O fundo atrás de você vira cor sólida para recortar na edição; luz uniforme melhora o contorno."
+            text += L(" O fundo atrás de você vira cor sólida para recortar na edição; luz uniforme melhora o contorno.", " The background behind you becomes a solid color to key out in editing; even lighting improves the edge.")
         }
         return text
     }
@@ -386,25 +387,26 @@ struct MoreMenu: View {
         Menu {
             // Dispositivos e formato do áudio não mudam no meio de uma gravação.
             Group {
-                Picker("Câmera", selection: Binding(get: { capture.activeCameraID }, set: { capture.cameraID = $0 })) {
+                Picker(L("Câmera", "Camera"), selection: Binding(get: { capture.activeCameraID }, set: { capture.cameraID = $0 })) {
                     ForEach(capture.cameras, id: \.uniqueID) { Text($0.localizedName).tag($0.uniqueID) }
                 }
-                Picker("Microfone", selection: Binding(get: { capture.activeMicID }, set: { capture.micID = $0 })) {
+                Picker(L("Microfone", "Microphone"), selection: Binding(get: { capture.activeMicID }, set: { capture.micID = $0 })) {
                     ForEach(capture.microphones, id: \.uniqueID) { Text($0.localizedName).tag($0.uniqueID) }
                 }
             }
             .disabled(capture.isRecording)
             if capture.isRecording {
-                Text("Câmera e microfone mudam depois de parar a gravação")
+                Text(L("Câmera e microfone mudam depois de parar a gravação", "Camera and microphone change after you stop recording"))
             }
             Divider()
-            Toggle("Espelhar prévia", isOn: $prompter.mirror)
-            Toggle("Microfone mono nos dois lados (L = R)", isOn: $capture.monoMic)
+            Toggle(L("Espelhar prévia", "Mirror preview"), isOn: $prompter.mirror)
+            Toggle(L("Microfone mono nos dois lados (L = R)", "Mono microphone on both sides (L = R)"), isOn: $capture.monoMic)
                 .disabled(capture.isRecording)
             Divider()
-            Text("Sincronia labial: \(Int(((capture.activeLatency ?? 0) * 1000).rounded())) ms compensados, ajuste automático pela fala")
+            Text(L("Sincronia labial: \(Int(((capture.activeLatency ?? 0) * 1000).rounded())) ms compensados, ajuste automático pela fala",
+                    "Lip sync: \(Int(((capture.activeLatency ?? 0) * 1000).rounded())) ms compensated, auto-adjusted from speech"))
             Divider()
-            Button("Abrir pasta de gravações") { capture.revealFolder() }
+            Button(L("Abrir pasta de gravações", "Open recordings folder")) { capture.revealFolder() }
         } label: {
             // A área clicável é o quadro inteiro, não só o desenho das reticências.
             Image(systemName: "ellipsis")
@@ -416,6 +418,6 @@ struct MoreMenu: View {
         .menuIndicator(.hidden)
         .frame(width: 34, height: 32)
         .contentShape(Rectangle())
-        .help("Câmera, microfone e ajustes")
+        .help(L("Câmera, microfone e ajustes", "Camera, microphone and settings"))
     }
 }

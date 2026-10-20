@@ -505,7 +505,7 @@ final class CaptureEngine: NSObject, ObservableObject {
 
     private static func nextFileURL() -> URL {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd 'às' HH.mm.ss"
+        formatter.dateFormat = L("yyyy-MM-dd 'às' HH.mm.ss", "yyyy-MM-dd 'at' HH.mm.ss")
         return folder.appendingPathComponent("Prompter \(formatter.string(from: Date())).mov")
     }
 
@@ -760,14 +760,16 @@ extension CaptureEngine {
             ScreenRecorder.requestAuthorization()
         }
         guard ScreenRecorder.isAuthorized else {
-            screenStatus = "Sem permissão de Gravação de Tela. Em Ajustes do Sistema › Privacidade e Segurança › Gravação de Tela e Áudio do Sistema, ligue o Prompter. Se ele já estiver ligado, remova-o com − e adicione de novo; reabra o app se o macOS pedir."
+            screenStatus = L("Sem permissão de Gravação de Tela. Em Ajustes do Sistema › Privacidade e Segurança › Gravação de Tela e Áudio do Sistema, ligue o Prompter. Se ele já estiver ligado, remova-o com − e adicione de novo; reabra o app se o macOS pedir.",
+                             "No Screen Recording permission. In System Settings › Privacy & Security › Screen & System Audio Recording, turn on Prompter. If it's already on, remove it with − and add it again; reopen the app if macOS asks.")
             return
         }
         let settings = effective
         let screenSettings = screen
         screenRecorder.onStop = { [weak self] error in
             guard let self, self.screen.mode == .screen else { return }
-            self.screenStatus = "A captura parou: \(error?.localizedDescription ?? "fonte indisponível"). Escolha a fonte de novo."
+            let reason = error?.localizedDescription ?? L("fonte indisponível", "source unavailable")
+            self.screenStatus = L("A captura parou: \(reason). Escolha a fonte de novo.", "Capture stopped: \(reason). Choose the source again.")
         }
         Task { @MainActor in
             do {
@@ -941,7 +943,7 @@ extension CaptureEngine {
     static func nextSessionFolder() -> URL {
         if let diagnosticFolder { return diagnosticFolder.appendingPathComponent("sessão-\(Int(Date().timeIntervalSince1970))", isDirectory: true) }
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd 'às' HH.mm.ss"
-        return folder.appendingPathComponent("Prompter \(formatter.string(from: Date())) — tela", isDirectory: true)
+        formatter.dateFormat = L("yyyy-MM-dd 'às' HH.mm.ss", "yyyy-MM-dd 'at' HH.mm.ss")
+        return folder.appendingPathComponent(L("Prompter \(formatter.string(from: Date())) — tela", "Prompter \(formatter.string(from: Date())) — screen"), isDirectory: true)
     }
 }

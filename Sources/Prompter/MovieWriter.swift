@@ -5,7 +5,7 @@
 final class MovieWriter {
     enum Failure: LocalizedError {
         case noFrames
-        var errorDescription: String? { "Nenhum quadro de vídeo foi recebido." }
+        var errorDescription: String? { L("Nenhum quadro de vídeo foi recebido.", "No video frames were received.") }
     }
 
     let url: URL

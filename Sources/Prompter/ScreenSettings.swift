@@ -5,7 +5,7 @@ import Foundation
 enum CaptureMode: String, Codable, CaseIterable, Identifiable {
     case camera, screen
     var id: String { rawValue }
-    var label: String { self == .camera ? "Câmera" : "Tela" }
+    var label: String { self == .camera ? L("Câmera", "Camera") : L("Tela", "Screen") }
 }
 
 /// Fonte da gravação de tela.
@@ -29,9 +29,9 @@ enum BubbleShape: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .circle: "Círculo"
-        case .square: "Quadrado"
-        case .rectangle: "Retângulo"
+        case .circle: L("Círculo", "Circle")
+        case .square: L("Quadrado", "Square")
+        case .rectangle: L("Retângulo", "Rectangle")
         }
     }
     var symbol: String {
@@ -82,16 +82,16 @@ enum ScreenOutput: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .composite: "Composição (tela + câmera)"
-        case .screen: "Só a tela"
-        case .camera: "Só a câmera"
+        case .composite: L("Composição (tela + câmera)", "Composite (screen + camera)")
+        case .screen: L("Só a tela", "Screen only")
+        case .camera: L("Só a câmera", "Camera only")
         }
     }
     var fileName: String {
         switch self {
-        case .composite: "composição.mov"
-        case .screen: "tela.mov"
-        case .camera: "câmera.mov"
+        case .composite: L("composição.mov", "composite.mov")
+        case .screen: L("tela.mov", "screen.mov")
+        case .camera: L("câmera.mov", "camera.mov")
         }
     }
 }

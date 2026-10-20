@@ -24,7 +24,7 @@ struct ScreenButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help(active ? "Gravando a tela com a câmera em destaque" : "Gravar a tela, uma janela ou uma área")
+        .help(active ? L("Gravando a tela com a câmera em destaque", "Recording the screen with your camera on top") : L("Gravar a tela, uma janela ou uma área", "Record the screen, a window or an area"))
         .onHover { hovering = $0 }
         .popover(isPresented: $app.showScreenPanel, arrowEdge: .top) {
             ScreenPanel()
@@ -42,7 +42,7 @@ struct ScreenPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            section("Gravar") {
+            section(L("Gravar", "Record")) {
                 Segments(options: CaptureMode.allCases, selection: $capture.screen.mode) { Text($0.label) }
             }
 
@@ -55,8 +55,8 @@ struct ScreenPanel: View {
                             .fixedSize(horizontal: false, vertical: true)
                         if !ScreenRecorder.isAuthorized {
                             HStack {
-                                Button("Pedir permissão") { ScreenRecorder.requestAuthorization() }
-                                Button("Abrir Ajustes") {
+                                Button(L("Pedir permissão", "Request permission")) { ScreenRecorder.requestAuthorization() }
+                                Button(L("Abrir Ajustes", "Open Settings")) {
                                     if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture") {
                                         NSWorkspace.shared.open(url)
                                     }
@@ -66,13 +66,13 @@ struct ScreenPanel: View {
                     }
                 }
 
-                section("Fonte") {
+                section(L("Fonte", "Source")) {
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(displays) { choice in sourceRow(choice, symbol: "display") }
-                        sourceRow(title: "Área da tela…", detail: areaDetail, symbol: "rectangle.dashed",
+                        sourceRow(title: L("Área da tela…", "Screen area…"), detail: areaDetail, symbol: "rectangle.dashed",
                                   selected: isArea) { app.selectArea() }
                         if !windows.isEmpty {
-                            Text("Janelas").font(.caption).foregroundStyle(.secondary).padding(.top, 6)
+                            Text(L("Janelas", "Windows")).font(.caption).foregroundStyle(.secondary).padding(.top, 6)
                             ScrollView {
                                 VStack(alignment: .leading, spacing: 4) {
                                     ForEach(windows) { choice in sourceRow(choice, symbol: "macwindow") }
@@ -83,20 +83,20 @@ struct ScreenPanel: View {
                     }
                 }
 
-                section("Câmera em destaque") {
+                section(L("Câmera em destaque", "Camera overlay")) {
                     VStack(alignment: .leading, spacing: 10) {
-                        Toggle("Mostrar a câmera sobre a tela", isOn: $capture.screen.bubble.visible)
+                        Toggle(L("Mostrar a câmera sobre a tela", "Show the camera over the screen"), isOn: $capture.screen.bubble.visible)
                         if capture.screen.bubble.visible {
                             Segments(options: BubbleShape.allCases, selection: $capture.screen.bubble.shape) {
                                 Label($0.label, systemImage: $0.symbol).labelStyle(.iconOnly).help($0.label)
                             }
-                            AdjustmentRow(title: "Tamanho", value: $capture.screen.bubble.size,
+                            AdjustmentRow(title: L("Tamanho", "Size"), value: $capture.screen.bubble.size,
                                           range: BubbleSettings.sizeRange) { "\(Int(($0 * 100).rounded()))%" }
                         }
                     }
                 }
 
-                section("Arquivos da gravação") {
+                section(L("Arquivos da gravação", "Recording files")) {
                     VStack(alignment: .leading, spacing: 6) {
                         ForEach(ScreenOutput.allCases) { output in
                             Toggle(output.label, isOn: Binding(
@@ -107,18 +107,18 @@ struct ScreenPanel: View {
                                     if !outputs.isEmpty { capture.screen.outputs = outputs }   // ao menos um
                                 }))
                         }
-                        Text("Cada arquivo a mais usa um codificador de vídeo e pesa no Mac. Para aulas longas, só a composição é o mais leve.")
+                        Text(L("Cada arquivo a mais usa um codificador de vídeo e pesa no Mac. Para aulas longas, só a composição é o mais leve.", "Each extra file uses another video encoder and adds load to the Mac. For long classes, the composite alone is the lightest."))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .disabled(capture.isRecording)
-                Toggle("Mostrar o cursor", isOn: $capture.screen.showsCursor)
+                Toggle(L("Mostrar o cursor", "Show the cursor"), isOn: $capture.screen.showsCursor)
                     .disabled(capture.isRecording)
 
-                Text("Arraste a câmera na prévia para posicioná-la e use o canto para redimensionar. "
-                     + "Os arquivos escolhidos saem sincronizados numa pasta por gravação.")
+                Text(L("Arraste a câmera na prévia para posicioná-la e use o canto para redimensionar. Os arquivos escolhidos saem sincronizados numa pasta por gravação.",
+                       "Drag the camera in the preview to position it and use the corner to resize. The selected files come out in sync, in one folder per recording."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -137,7 +137,7 @@ struct ScreenPanel: View {
 
     private var areaDetail: String {
         if case .area(_, _, _, let w, let h) = capture.screen.source { return "\(Int(w))×\(Int(h)) pt" }
-        return "Desenhe um retângulo"
+        return L("Desenhe um retângulo", "Draw a rectangle")
     }
 
     private func loadChoices() async {
@@ -233,11 +233,11 @@ struct BubbleEditor: View {
                         update(resized)
                     }
                     .onEnded { _ in commit() })
-                .help("Arraste para redimensionar")
+                .help(L("Arraste para redimensionar", "Drag to resize"))
         }
         .frame(width: rect.width, height: rect.height)
         .onHover { hovering = $0 }
-        .help("Arraste para mover a câmera")
+        .help(L("Arraste para mover a câmera", "Drag to move the camera"))
         .position(x: rect.midX, y: rect.midY)
     }
 
@@ -269,7 +269,7 @@ struct ScreenNotice: View {
                 .frame(maxWidth: 420)
             HStack {
                 if !ScreenRecorder.isAuthorized {
-                    Button("Abrir Ajustes") {
+                    Button(L("Abrir Ajustes", "Open Settings")) {
                         ScreenRecorder.requestAuthorization()
                         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture") {
                             NSWorkspace.shared.open(url)
@@ -277,7 +277,7 @@ struct ScreenNotice: View {
                     }
                     .buttonStyle(.glassProminent)
                 }
-                Button("Tentar de novo") { capture.updateScreenCapture() }
+                Button(L("Tentar de novo", "Try again")) { capture.updateScreenCapture() }
                     .buttonStyle(.glass)
             }
         }

@@ -139,7 +139,7 @@ enum DemoRenderer {
         NSBezierPath(ovalIn: dot).fill()
         let label: [NSAttributedString.Key: Any] = [.font: NSFont.systemFont(ofSize: 17, weight: .semibold),
                                                     .foregroundColor: NSColor.white.withAlphaComponent(0.6)]
-        NSAttributedString(string: "VOCÊ FALA", attributes: label).draw(at: CGPoint(x: 72, y: bar.minY + 18))
+        NSAttributedString(string: L("VOCÊ FALA", "YOU SAY"), attributes: label).draw(at: CGPoint(x: 72, y: bar.minY + 18))
         let spoken: [NSAttributedString.Key: Any] = [.font: NSFont.systemFont(ofSize: 26, weight: .medium),
                                                      .foregroundColor: NSColor.white]
         NSAttributedString(string: caption.isEmpty ? "…" : "“\(caption)”", attributes: spoken)

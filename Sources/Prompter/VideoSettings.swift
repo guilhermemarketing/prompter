@@ -49,10 +49,10 @@ enum ChromaBackground: String, CaseIterable, Codable, Identifiable {
 
     var label: String {
         switch self {
-        case .none: "Sem fundo"
-        case .green: "Verde"
-        case .blue: "Azul"
-        case .red: "Vermelho"
+        case .none: L("Sem fundo", "No background")
+        case .green: L("Verde", "Green")
+        case .blue: L("Azul", "Blue")
+        case .red: L("Vermelho", "Red")
         }
     }
 
@@ -74,9 +74,9 @@ enum ChromaStyle: String, CaseIterable, Codable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .plain: "Liso"
+        case .plain: L("Liso", "Plain")
         case .cel: "Cel-shading"
-        case .sticker: "Adesivo"
+        case .sticker: L("Adesivo", "Sticker")
         }
     }
 }
@@ -152,20 +152,20 @@ enum QualityPreset: String, CaseIterable, Codable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .economy: "Econômica"
-        case .recommended: "Recomendada"
+        case .economy: L("Econômica", "Economy")
+        case .recommended: L("Recomendada", "Recommended")
         case .superiorHEVC: "Superior HEVC"
         case .superior: "Superior ProRes"
-        case .custom: "Personalizado"
+        case .custom: L("Personalizado", "Custom")
         }
     }
     var detail: String {
         switch self {
-        case .economy: "Web, arquivos leves"
-        case .recommended: "Reels e redes sociais"
-        case .superiorHEVC: "HEVC + AAC visualmente sem perdas: máxima qualidade para redes e YouTube"
-        case .superior: "ProRes 422 HQ + PCM 24-bit: para edição profissional"
-        case .custom: "Taxa escolhida por você"
+        case .economy: L("Web, arquivos leves", "Web, small files")
+        case .recommended: L("Reels e redes sociais", "Reels and social media")
+        case .superiorHEVC: L("HEVC + AAC visualmente sem perdas: máxima qualidade para redes e YouTube", "Visually lossless HEVC + AAC: top quality for social media and YouTube")
+        case .superior: L("ProRes 422 HQ + PCM 24-bit: para edição profissional", "ProRes 422 HQ + 24-bit PCM: for professional editing")
+        case .custom: L("Taxa escolhida por você", "Bitrate of your choice")
         }
     }
 }
@@ -293,10 +293,10 @@ struct ColorPreset: Codable, Identifiable, Equatable {
 
     static let builtIns: [ColorPreset] = [
         .init(name: "Natural", adjustments: .neutral, builtIn: true),
-        .init(name: "Nítido", adjustments: .init(contrast: 0.1, sharpness: 0.5, blacks: -0.1), builtIn: true),
-        .init(name: "Contraste", adjustments: .init(contrast: 0.3, brightness: -0.04, sharpness: 0.25, blacks: -0.25, whites: 0.2), builtIn: true),
-        .init(name: "Suave", adjustments: .init(contrast: -0.15, brightness: 0.05, shadows: 0.3), builtIn: true),
-        .init(name: "Luminoso", adjustments: .init(contrast: 0.05, brightness: 0.12, sharpness: 0.2, whites: 0.25, shadows: 0.2), builtIn: true),
+        .init(name: L("Nítido", "Crisp"), adjustments: .init(contrast: 0.1, sharpness: 0.5, blacks: -0.1), builtIn: true),
+        .init(name: L("Contraste", "Contrast"), adjustments: .init(contrast: 0.3, brightness: -0.04, sharpness: 0.25, blacks: -0.25, whites: 0.2), builtIn: true),
+        .init(name: L("Suave", "Soft"), adjustments: .init(contrast: -0.15, brightness: 0.05, shadows: 0.3), builtIn: true),
+        .init(name: L("Luminoso", "Bright"), adjustments: .init(contrast: 0.05, brightness: 0.12, sharpness: 0.2, whites: 0.25, shadows: 0.2), builtIn: true),
         .init(name: "Cinema", adjustments: .init(contrast: 0.22, brightness: -0.08, sharpness: 0.15, hue: -3, blacks: 0.25, whites: -0.15), builtIn: true),
     ]
 }

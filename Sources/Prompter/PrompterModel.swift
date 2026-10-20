@@ -180,7 +180,9 @@ final class PrompterModel: ObservableObject {
         anchor = Date()
     }
 
-    static let welcome = """
+    static var welcome: String { AppLanguage.isPortuguese ? welcomePT : welcomeEN }
+
+    private static let welcomePT = """
     Bem-vindo ao Prompter.
 
     Escreva ou cole seu roteiro com ⌘E. Também dá para arrastar um arquivo de texto para a janela.
@@ -189,8 +191,22 @@ final class PrompterModel: ObservableObject {
 
     No modo tempo, Espaço inicia e pausa a rolagem, e as setas ↑ e ↓ ajustam a velocidade. Em qualquer modo, role no trackpad para reposicionar.
 
-    ⌘R grava. A contagem aparece aqui em cima, perto da câmera. Os vídeos vão para Filmes › Prompter.
+    ⌘R grava e para. Os vídeos vão para Filmes › Prompter.
 
     Mantenha o olhar nesta linha. Ela está o mais perto possível da lente.
+    """
+
+    private static let welcomeEN = """
+    Welcome to Prompter.
+
+    Write or paste your script with ⌘E. You can also drag a text file onto the window.
+
+    With voice mode on, the text follows your speech: the words you have already said fade out and the next line rises on its own. Feel free to improvise or skip a passage; it finds its place again.
+
+    In timed mode, Space starts and pauses scrolling, and the ↑ and ↓ arrows adjust the speed. In either mode, scroll on the trackpad to reposition.
+
+    ⌘R starts and stops recording. Videos go to Movies › Prompter.
+
+    Keep your eyes on this line. It is as close to the lens as possible.
     """
 }

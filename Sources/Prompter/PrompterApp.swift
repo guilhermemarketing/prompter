@@ -22,32 +22,32 @@ struct PrompterApp: App {
         .defaultLaunchBehavior(.presented)
         .commands {
             CommandGroup(replacing: .newItem) {}
-            CommandMenu("Controles") {
-                Button(app.isRecordingOrCounting ? "Parar gravação" : "Gravar") { app.toggleRecording() }
+            CommandMenu(L("Controles", "Controls")) {
+                Button(app.isRecordingOrCounting ? L("Parar gravação", "Stop recording") : L("Gravar", "Record")) { app.toggleRecording() }
                     .keyboardShortcut("r")
-                Button("Editar roteiro") { app.setEditing(!app.prompter.isEditing) }
+                Button(L("Editar roteiro", "Edit script")) { app.setEditing(!app.prompter.isEditing) }
                     .keyboardShortcut("e")
-                Button("Alternar modo voz / tempo") { app.toggleFollowVoice() }
+                Button(L("Alternar modo voz / tempo", "Toggle voice / timed mode")) { app.toggleFollowVoice() }
                     .keyboardShortcut("v", modifiers: [.command, .shift])
-                Button("Luz automática") { app.toggleAutoLight() }
+                Button(L("Luz automática", "Auto light")) { app.toggleAutoLight() }
                     .keyboardShortcut("l", modifiers: [.command, .shift])
                 Picker("Teleprompter", selection: $app.placement) {
                     ForEach(PrompterPlacement.allCases) { Text($0.label).tag($0) }
                 }
                 Divider()
-                Button("Voltar ao início") { app.prompter.rewind() }
+                Button(L("Voltar ao início", "Back to start")) { app.prompter.rewind() }
                     .keyboardShortcut(.upArrow, modifiers: .command)
-                Button("Texto maior") { app.prompter.adjustFont(4) }
+                Button(L("Texto maior", "Larger text")) { app.prompter.adjustFont(4) }
                     .keyboardShortcut("=")
-                Button("Texto menor") { app.prompter.adjustFont(-4) }
+                Button(L("Texto menor", "Smaller text")) { app.prompter.adjustFont(-4) }
                     .keyboardShortcut("-")
                 Divider()
-                Button("Abrir pasta de gravações") { app.capture.revealFolder() }
+                Button(L("Abrir pasta de gravações", "Open recordings folder")) { app.capture.revealFolder() }
                     .keyboardShortcut("o", modifiers: [.command, .shift])
             }
         }
 
-        Window("Estilo do recorte", id: "styleColors") {
+        Window(L("Estilo do recorte", "Cutout style"), id: "styleColors") {
             StyleColorsView()
                 .environmentObject(app.capture)
                 .preferredColorScheme(.dark)

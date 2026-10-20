@@ -10,8 +10,8 @@ final class SpeechFollower: @unchecked Sendable {
         case noAudioFormat
         var errorDescription: String? {
             switch self {
-            case .unsupportedLanguage(let id): "O reconhecimento de voz não suporta o idioma \(id)."
-            case .noAudioFormat: "Formato de áudio do reconhecimento indisponível."
+            case .unsupportedLanguage(let id): L("O reconhecimento de voz não suporta o idioma \(id).", "Speech recognition doesn't support the language \(id).")
+            case .noAudioFormat: L("Formato de áudio do reconhecimento indisponível.", "Speech recognition audio format unavailable.")
             }
         }
     }

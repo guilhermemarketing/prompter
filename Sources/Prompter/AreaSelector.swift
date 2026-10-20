@@ -69,7 +69,7 @@ private final class SelectionView: NSView {
         NSColor.black.withAlphaComponent(0.45).setFill()
         bounds.fill()
         guard let rect = selection else {
-            hint("Arraste para escolher a área. Esc cancela.", at: CGPoint(x: bounds.midX, y: bounds.midY))
+            hint(L("Arraste para escolher a área. Esc cancela.", "Drag to choose the area. Esc cancels."), at: CGPoint(x: bounds.midX, y: bounds.midY))
             return
         }
         NSColor.clear.setFill()

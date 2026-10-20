@@ -20,7 +20,7 @@ final class LUTLibrary: ObservableObject {
     static let shared = LUTLibrary()
 
     static let builtIns: [LUTInfo] = [
-        LUTInfo(id: "builtin.vibrant", name: "Vibrante", fileName: nil),
+        LUTInfo(id: "builtin.vibrant", name: L("Vibrante", "Vibrant"), fileName: nil),
         LUTInfo(id: "builtin.cinema", name: "Cinema", fileName: nil),
         LUTInfo(id: "builtin.noir", name: "Noir", fileName: nil),
         LUTInfo(id: "builtin.pop", name: "Pop", fileName: nil),
@@ -118,10 +118,10 @@ enum CubeParser {
         case oneDimensional, missingSize, unsupportedSize(Int), wrongCount(expected: Int, found: Int)
         var errorDescription: String? {
             switch self {
-            case .oneDimensional: "LUTs 1D não são suportados; use um LUT 3D (.cube)."
-            case .missingSize: "Arquivo sem LUT_3D_SIZE."
-            case .unsupportedSize(let n): "Tamanho \(n)³ não suportado (use de 2 a 64)."
-            case .wrongCount(let e, let f): "Esperava \(e) cores e encontrou \(f)."
+            case .oneDimensional: L("LUTs 1D não são suportados; use um LUT 3D (.cube).", "1D LUTs aren't supported; use a 3D LUT (.cube).")
+            case .missingSize: L("Arquivo sem LUT_3D_SIZE.", "File has no LUT_3D_SIZE.")
+            case .unsupportedSize(let n): L("Tamanho \(n)³ não suportado (use de 2 a 64).", "Size \(n)³ isn't supported (use 2 to 64).")
+            case .wrongCount(let e, let f): L("Esperava \(e) cores e encontrou \(f).", "Expected \(e) colors but found \(f).")
             }
         }
     }

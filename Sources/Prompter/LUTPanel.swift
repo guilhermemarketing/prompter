@@ -25,7 +25,7 @@ struct LUTButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help(active ? "LUT: \(LUTLibrary.shared.name(for: capture.settings.lutID) ?? "")" : "LUTs de cor")
+        .help(active ? "LUT: \(LUTLibrary.shared.name(for: capture.settings.lutID) ?? "")" : L("LUTs de cor", "Color LUTs"))
         .onHover { hovering = $0 }
         .popover(isPresented: $app.showLUTPanel, arrowEdge: .top) {
             LUTPanel()
@@ -46,17 +46,17 @@ struct LUTPanel: View {
             HStack {
                 Text("LUT").font(.system(size: 15, weight: .semibold))
                 Spacer()
-                Button("Importar .cube…") { app.importLUTs() }
+                Button(L("Importar .cube…", "Import .cube…")) { app.importLUTs() }
                     .buttonStyle(.borderless)
             }
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 3), spacing: 6) {
-                chip(title: "Nenhum", id: nil)
+                chip(title: L("Nenhum", "None"), id: nil)
                 ForEach(library.all) { info in
                     chip(title: info.name, id: info.id)
                         .contextMenu {
                             if !info.builtIn {
-                                Button("Remover LUT", role: .destructive) {
+                                Button(L("Remover LUT", "Remove LUT"), role: .destructive) {
                                     if capture.settings.lutID == info.id { capture.settings.lutID = nil }
                                     library.remove(info)
                                 }
@@ -65,12 +65,12 @@ struct LUTPanel: View {
                 }
             }
 
-            AdjustmentRow(title: "Intensidade", value: $capture.settings.lutIntensity, range: 0...1) {
+            AdjustmentRow(title: L("Intensidade", "Intensity"), value: $capture.settings.lutIntensity, range: 0...1) {
                 "\(Int(($0 * 100).rounded()))%"
             }
             .disabled(capture.settings.lutID == nil)
 
-            Text("LUTs 3D .cube (Rec.709) de até 64³. Entram depois dos ajustes de cor e antes do chroma, na prévia e na gravação.")
+            Text(L("LUTs 3D .cube (Rec.709) de até 64³. Entram depois dos ajustes de cor e antes do chroma, na prévia e na gravação.", "3D .cube LUTs (Rec.709) up to 64³. Applied after color adjustments and before chroma, in the preview and the recording."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

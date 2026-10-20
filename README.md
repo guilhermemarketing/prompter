@@ -44,6 +44,7 @@ O modo voz é o coração do Prompter. Em vez de rolar numa velocidade fixa que 
 - **Teleprompter e gravador juntos:** grava a câmera, a tela ou as duas, com áudio sincronizado. Você não precisa de OBS nem de outro gravador.
 - **Texto perto da câmera:** o roteiro pode ficar fixo no topo da tela, junto da câmera do MacBook ou do iMac, para o seu olhar continuar na lente.
 - **Privado:** transcrição, recorte de fundo e sincronia rodam no Mac. Nenhum roteiro ou vídeo é enviado para a internet.
+- **Português e inglês:** a interface segue o idioma do Mac: português quando o sistema está em português e inglês nos demais idiomas.
 
 ## Recursos do teleprompter
 
@@ -263,6 +264,6 @@ To record Reels on a Mac, open Prompter, choose the 9:16 format and paste your s
 
 **Install:** [download Prompter.zip](https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip), unzip it and move Prompter to Applications. On first launch, macOS cannot verify the developer: open **System Settings → Privacy & Security** and click **Open Anyway**. To build from source, you need the Xcode Command Line Tools: clone the repository and run `./build.sh --install`. The *Assinatura estável* section above shows how to create a local signing certificate, so macOS keeps camera, microphone and screen permissions across builds.
 
-The interface is in Brazilian Portuguese.
+The interface follows your Mac's language: Portuguese on Portuguese systems, English everywhere else.
 
 Created by [Gui · gui.marketing](https://gui.marketing). If Prompter helps you, please ⭐ the repository. License: MIT.

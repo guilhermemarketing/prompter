@@ -44,7 +44,7 @@ struct ContentView: View {
                         .allowsHitTesting(false)
 
                     if prompter.script.isEmpty {
-                        Text("Pressione E para escrever seu roteiro.")
+                        Text(L("Pressione E para escrever seu roteiro.", "Press E to write your script."))
                             .font(.system(size: 28, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.5))
                             .padding(.top, max(geo.size.height * 0.15, 64))
@@ -197,7 +197,7 @@ struct ToastView: View {
             case .saved(let url):
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                 Text(toast.message).fontWeight(.medium)
-                Button("Mostrar no Finder") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
+                Button(L("Mostrar no Finder", "Show in Finder")) { NSWorkspace.shared.activateFileViewerSelecting([url]) }
                     .buttonStyle(.link)
             case .info:
                 Image(systemName: "info.circle.fill").foregroundStyle(.secondary)
@@ -218,8 +218,8 @@ struct AccessNotice: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: "video.slash.fill").font(.system(size: 34)).foregroundStyle(.secondary)
-            Text("O Prompter precisa de acesso à câmera").font(.title3.weight(.semibold))
-            Button("Abrir Ajustes do Sistema") {
+            Text(L("O Prompter precisa de acesso à câmera", "Prompter needs camera access")).font(.title3.weight(.semibold))
+            Button(L("Abrir Ajustes do Sistema", "Open System Settings")) {
                 if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera") {
                     NSWorkspace.shared.open(url)
                 }
@@ -242,14 +242,14 @@ struct ScriptEditor: View {
             Rectangle().fill(.ultraThickMaterial).ignoresSafeArea()
             VStack(alignment: .leading, spacing: 16) {
                 HStack(alignment: .firstTextBaseline, spacing: 14) {
-                    Text("Roteiro").font(.system(size: 26, weight: .bold))
+                    Text(L("Roteiro", "Script")).font(.system(size: 26, weight: .bold))
                     Text(stats).font(.callout.monospacedDigit()).foregroundStyle(.secondary)
                     Spacer()
-                    Button("Concluído") { app.setEditing(false) }
+                    Button(L("Concluído", "Done")) { app.setEditing(false) }
                         .keyboardShortcut(.return, modifiers: .command)
                         .buttonStyle(.glassProminent)
                         .controlSize(.large)
-                        .help("⌘↩ ou Esc")
+                        .help(L("⌘↩ ou Esc", "⌘↩ or Esc"))
                 }
                 TextEditor(text: $prompter.script)
                     .font(.system(size: 19))
@@ -268,6 +268,7 @@ struct ScriptEditor: View {
     private var stats: String {
         let words = prompter.words.count
         let seconds = Int((Double(words) / 150 * 60).rounded())
-        return "\(words) palavras · ~\(seconds / 60):\(String(format: "%02d", seconds % 60)) de fala"
+        let time = "\(seconds / 60):\(String(format: "%02d", seconds % 60))"
+        return L("\(words) palavras · ~\(time) de fala", "\(words) words · ~\(time) of speech")
     }
 }
