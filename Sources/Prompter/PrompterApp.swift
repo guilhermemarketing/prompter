@@ -31,6 +31,8 @@ struct PrompterApp: App {
                     .keyboardShortcut("v", modifiers: [.command, .shift])
                 Button(L("Luz automática", "Auto light")) { app.toggleAutoLight() }
                     .keyboardShortcut("l", modifiers: [.command, .shift])
+                Button(app.showPrompter ? L("Ocultar teleprompter", "Hide teleprompter") : L("Mostrar teleprompter", "Show teleprompter")) { app.toggleTeleprompter() }
+                    .keyboardShortcut("h", modifiers: [.command, .shift])
                 Picker("Teleprompter", selection: $app.placement) {
                     ForEach(PrompterPlacement.allCases) { Text($0.label).tag($0) }
                 }

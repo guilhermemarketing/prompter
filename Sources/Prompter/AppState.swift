@@ -33,11 +33,25 @@ final class AppState: ObservableObject {
         PrompterPlacement(rawValue: UserDefaults.standard.string(forKey: "prompterPlacement") ?? "") ?? .overlay {
         didSet {
             UserDefaults.standard.set(placement.rawValue, forKey: "prompterPlacement")
-            panels.apply(placement, model: prompter)
+            panels.apply(showPrompter ? placement : nil, model: prompter)
             if placement != oldValue { show("Teleprompter: \(placement.label)", .info) }
         }
     }
     private let panels = PrompterPanels()
+    /// Teleprompter visível. Desligado, o app vira só gravador (videoaulas, tela): sem texto nem escuta.
+    @Published private(set) var showPrompter =
+        UserDefaults.standard.object(forKey: "showPrompter") == nil || UserDefaults.standard.bool(forKey: "showPrompter")
+
+    func toggleTeleprompter() { setTeleprompter(!showPrompter) }
+
+    func setTeleprompter(_ visible: Bool) {
+        guard visible != showPrompter else { return }
+        if !visible { pause() }
+        showPrompter = visible
+        UserDefaults.standard.set(visible, forKey: "showPrompter")
+        panels.apply(visible ? placement : nil, model: prompter)
+        show(visible ? L("Teleprompter visível", "Teleprompter shown") : L("Teleprompter oculto: só gravação", "Teleprompter hidden: recording only"), .info)
+    }
 
     private var toastTask: Task<Void, Never>?
     private var listenTask: Task<Void, Never>?
@@ -61,7 +75,7 @@ final class AppState: ObservableObject {
             return consumed ? nil : event
         }
         capture.start()
-        panels.apply(placement, model: prompter)
+        panels.apply(showPrompter ? placement : nil, model: prompter)
         // Diagnóstico: --diagnostic-record SEGUNDOS PASTA grava sozinho e para (uso de desenvolvimento).
         if let i = CommandLine.arguments.firstIndex(of: "--diagnostic-record"), CommandLine.arguments.count > i + 2,
            let seconds = Double(CommandLine.arguments[i + 1]) {
@@ -78,7 +92,7 @@ final class AppState: ObservableObject {
     func togglePlay() { prompter.isPlaying ? pause() : play() }
 
     func play() {
-        guard !prompter.isPlaying, !prompter.script.isEmpty else { return }
+        guard showPrompter, !prompter.isPlaying, !prompter.script.isEmpty else { return }
         prompter.isEditing = false
         prompter.play()
         if prompter.followVoice { startListening() }
@@ -334,7 +348,8 @@ final class AppState: ObservableObject {
             case "e": setEditing(true)
             case "v": toggleFollowVoice()
             case "l": toggleAutoLight()
-            case "t": placement = placement.next
+            case "t": if showPrompter { placement = placement.next } else { setTeleprompter(true) }
+            case "h": toggleTeleprompter()
             case "f": if !capture.isRecording { capture.settings.aspect = capture.settings.aspect.next }
             default: return false
             }

@@ -39,11 +39,12 @@ final class PrompterPanels {
     private var floating: NSPanel?
     private var top: NSPanel?
 
-    func apply(_ placement: PrompterPlacement, model: PrompterModel) {
+    /// `nil` = teleprompter oculto.
+    func apply(_ placement: PrompterPlacement?, model: PrompterModel) {
         if placement != .floating { floating?.orderOut(nil); floating = nil }
         if placement != .top { top?.orderOut(nil); top = nil }
         switch placement {
-        case .overlay: break
+        case .overlay, nil: break
         case .floating: if floating == nil { floating = makeFloating(model: model) }
         case .top: if top == nil { top = makeTop(model: model) }
         }

@@ -1,4 +1,4 @@
 "NSCameraUsageDescription" = "O Prompter usa a câmera para mostrar a prévia e gravar seu vídeo.";
 "NSMicrophoneUsageDescription" = "O Prompter usa o microfone para gravar o áudio do seu vídeo.";
 "NSSpeechRecognitionUsageDescription" = "O Prompter reconhece sua fala no próprio Mac para o texto acompanhar o que você diz.";
-"NSHumanReadableCopyright" = "Criado por Gui · gui.marketing. Código aberto (MIT): github.com/guilhermemarketing/prompter";
+"NSHumanReadableCopyright" = "Criado por Gui · https://gui.marketing. Código aberto (MIT): github.com/guilhermemarketing/prompter";

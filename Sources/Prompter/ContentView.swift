@@ -30,7 +30,7 @@ struct ContentView: View {
                     AccessNotice().frame(maxHeight: .infinity, alignment: .center)
                 }
 
-                if app.placement == .overlay {
+                if app.showPrompter, app.placement == .overlay {
                     LinearGradient(stops: [
                         .init(color: .black.opacity(0.8), location: 0),
                         .init(color: .black.opacity(0.55), location: 0.5),

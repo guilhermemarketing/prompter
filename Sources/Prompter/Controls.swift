@@ -17,10 +17,22 @@ struct ControlsBar: View {
             }
         }
         .animation(.smooth(duration: 0.25), value: prompter.followVoice)
+        .animation(.smooth(duration: 0.25), value: app.showPrompter)
     }
 
     private var textControls: some View {
         HStack(spacing: 2) {
+            if app.showPrompter { prompterControls } else {
+                BarButton("text.viewfinder", help: L("Mostrar teleprompter  H", "Show teleprompter  H")) { app.setTeleprompter(true) }
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .glassEffect(.regular, in: .capsule)
+    }
+
+    @ViewBuilder
+    private var prompterControls: some View {
             BarButton("square.and.pencil", help: L("Editar roteiro  E", "Edit script  E")) { app.setEditing(true) }
             BarButton(prompter.isPlaying ? "pause.fill" : "play.fill",
                       help: prompter.followVoice ? L("Ouvir e acompanhar  Espaço", "Listen and follow  Space") : L("Rolar ou pausar  Espaço", "Scroll or pause  Space")) {
@@ -39,10 +51,7 @@ struct ControlsBar: View {
             }
             BarButton("textformat.size.smaller", help: L("Texto menor  ⌘−", "Smaller text  ⌘−")) { prompter.adjustFont(-4) }
             BarButton("textformat.size.larger", help: L("Texto maior  ⌘=", "Larger text  ⌘=")) { prompter.adjustFont(4) }
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-        .glassEffect(.regular, in: .capsule)
+            BarButton("eye.slash", help: L("Ocultar teleprompter (só gravar)  H", "Hide teleprompter (record only)  H")) { app.setTeleprompter(false) }
     }
 
     private var cameraControls: some View {

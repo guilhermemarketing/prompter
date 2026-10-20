@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/pre%C3%A7o-gr%C3%A1tis-2ea44f" alt="Grátis">
 </p>
 
-**Prompter é um teleprompter grátis para macOS que rola sozinho conforme você fala e grava câmera, tela e microfone no mesmo app.** Dá para gravar Reels, vídeos para o YouTube e aulas direto do Mac, lendo o roteiro sem desviar o olhar da câmera. É open-source (MIT), sem assinatura, sem compras dentro do app e sem marca d'água. Feito em Swift para Mac com Apple Silicon (M1, M2, M3, M4 e posteriores), com todo o processamento no próprio computador.
+**Prompter é um teleprompter grátis para macOS que rola sozinho conforme você fala e grava câmera, tela e microfone no mesmo app.** Dá para gravar Reels, vídeos para o YouTube, videoaulas e tutoriais direto do Mac, lendo o roteiro sem desviar o olhar da câmera. Quando não precisar de roteiro, oculte o teleprompter e use o app só para gravar. É open-source (MIT), sem assinatura, sem compras dentro do app e sem marca d'água. Feito em Swift para Mac com Apple Silicon (M1, M2, M3, M4 e posteriores), com todo o processamento no próprio computador.
 
 Criado por **[Gui · gui.marketing](https://gui.marketing)**.
 
@@ -55,10 +55,15 @@ O modo voz é o coração do Prompter. Em vez de rolar numa velocidade fixa que 
   - em caixa solta sempre à frente das outras janelas;
   - fixo no topo da tela, junto da câmera.
 - **Tamanho da fonte e atalhos de teclado** para controlar tudo sem tirar os olhos do texto.
+- **Teleprompter opcional:** oculte o texto com H quando quiser só gravar, por exemplo uma videoaula, e mostre de novo quando precisar.
 
 ## Gravar Reels no Mac com teleprompter
 
 Escolha o formato 9:16 e grave Reels, TikTok e Shorts direto do Mac, já recortados na vertical, em até 4K. O roteiro fica junto da câmera e rola sozinho enquanto você fala, então o vídeo sai com você olhando para a lente, sem decorar o texto e sem celular. Os formatos 4:5 (feed) e 16:9 (YouTube) funcionam do mesmo jeito.
+
+## Gravar videoaula no Mac
+
+Para videoaulas, cursos online e tutoriais, use o modo Tela: grave a tela inteira, uma janela ou uma área, com a sua câmera em destaque sobre o conteúdo. Leia o roteiro no teleprompter ou, se preferir falar livremente, oculte o teleprompter (tecla H) e use o Prompter só como gravador de tela e câmera. Para aulas longas, gravar só a composição deixa o Mac mais leve.
 
 ## Gravação de vídeo com teleprompter
 
@@ -160,6 +165,7 @@ Os vídeos ficam em `~/Movies/Prompter/`.
 | Alternar formato | F |
 | Luz automática | L (⇧⌘L) |
 | Posição do teleprompter | T |
+| Ocultar / mostrar teleprompter | H (⇧⌘H) |
 | Gravar / parar | R (⌘R) |
 | Editar roteiro | E (⌘E; Esc fecha) |
 | Pasta de gravações | ⇧⌘O |
@@ -189,6 +195,14 @@ Para gravar Reels no Mac, abra o Prompter, escolha o formato 9:16 e cole o rotei
 ### Como usar teleprompter no Mac?
 
 Instale o Prompter, permita câmera e microfone e cole o roteiro com a tecla E. Deixe o texto junto da câmera com T, ative o modo voz com V e grave com R. Fale naturalmente: o texto acompanha você e o vídeo vai para Filmes.
+
+### Como gravar videoaula no Mac?
+
+Para gravar videoaula no Mac, abra o Prompter, ative o modo Tela e escolha a tela, uma janela ou uma área. Sua câmera aparece em destaque sobre a aula. Use o roteiro no teleprompter ou oculte-o com H e grave com R.
+
+### Dá para usar o Prompter sem teleprompter?
+
+Sim. Pressione H ou clique no ícone de olho para ocultar o teleprompter, e o Prompter vira só um gravador de câmera e tela. É o jeito mais simples de gravar videoaulas, tutoriais e cursos online sem roteiro, com áudio sincronizado e até 4K.
 
 ### O teleprompter precisa de internet?
 
@@ -231,7 +245,7 @@ Prompter foi criado por [Gui, do gui.marketing](https://gui.marketing).
 
 ## English
 
-**Prompter is a free, open-source automatic teleprompter for Mac: it follows your voice and records your camera, screen and microphone.** You can record Reels, YouTube videos and classes straight from your Mac. There is no subscription, no in-app purchase and no watermark. It is native Swift for Apple Silicon Macs running macOS 26 or later, and everything runs on-device.
+**Prompter is a free, open-source automatic teleprompter for Mac: it follows your voice and records your camera, screen and microphone.** You can record Reels, YouTube videos, video lessons and tutorials straight from your Mac, or hide the teleprompter and use it as a plain camera and screen recorder. There is no subscription, no in-app purchase and no watermark. It is native Swift for Apple Silicon Macs running macOS 26 or later, and everything runs on-device.
 
 - **Automatic, voice-follow teleprompter:** on-device speech recognition scrolls the script as you read, karaoke-style. If you improvise, it waits; when you return to the script, it finds its place. A constant-speed mode is also available.
 - **Flexible placement:** the text can sit over the camera preview, float above other apps, or stay pinned at the top of the screen next to the camera.
@@ -261,6 +275,10 @@ The best teleprompter for Mac follows your voice, keeps the script next to the c
 #### How do I record Reels on a Mac?
 
 To record Reels on a Mac, open Prompter, choose the 9:16 format and paste your script with the E key. Turn on voice mode with V and record with R. The vertical video comes out in 4K, ready for Instagram, TikTok and YouTube Shorts.
+
+#### How do I record a video lesson on a Mac?
+
+To record a video lesson on a Mac, open Prompter, switch to Screen mode and pick a display, window or area. Your camera appears on top of the lesson. Read your script on the teleprompter or hide it with H, then record with R.
 
 **Install:** [download Prompter.zip](https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip), unzip it and move Prompter to Applications. On first launch, macOS cannot verify the developer: open **System Settings → Privacy & Security** and click **Open Anyway**. To build from source, you need the Xcode Command Line Tools: clone the repository and run `./build.sh --install`. The *Assinatura estável* section above shows how to create a local signing certificate, so macOS keeps camera, microphone and screen permissions across builds.
 
