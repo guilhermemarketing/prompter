@@ -47,7 +47,7 @@ final class AppState: ObservableObject {
 
     /// Chamado quando a janela aparece (NSApp já existe).
     func bootstrap() {
-        guard monitor == nil else { return }
+        guard monitor == nil, !DemoRenderer.isRequested else { return }
         capture.onFinishedRecording = { [weak self] result in
             MainActor.assumeIsolated { self?.recordingFinished(result) }
         }

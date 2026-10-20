@@ -86,6 +86,9 @@ final class PrompterTextView: NSView {
         update(dt: min(dt, 0.1))
     }
 
+    /// Avança a rolagem sem display link (modo demonstração).
+    func step(_ dt: CFTimeInterval) { update(dt: dt) }
+
     private func update(dt: CFTimeInterval) {
         MainActor.assumeIsolated {
             let model = self.model

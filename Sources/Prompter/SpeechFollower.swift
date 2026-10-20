@@ -20,6 +20,8 @@ final class SpeechFollower: @unchecked Sendable {
     var onPosition: ((Int) -> Void)?
     /// Texto bruto ouvido (finalizado + volátil), útil para depuração.
     var onHeard: ((String) -> Void)?
+    /// Texto reconhecido como saiu do transcritor (com acentos e maiúsculas) e se é final.
+    var onTranscript: ((String, Bool) -> Void)?
 
     private let lock = NSLock()
     private var aligner = ScriptAligner(keys: [])
@@ -186,6 +188,7 @@ final class SpeechFollower: @unchecked Sendable {
             return (old, new, (finalized.suffix(8) + volatile).joined(separator: " "))
         }
         DispatchQueue.main.async { [self] in
+            onTranscript?(text, isFinal)
             onHeard?(heard)
             if new != old { onPosition?(new) }
         }

@@ -8,7 +8,7 @@ final class PrompterModel: ObservableObject {
     static let fontRange: ClosedRange<Double> = 20...120
     static let speedRange: ClosedRange<Int> = 1...20
 
-    private let defaults = UserDefaults.standard
+    private let defaults: UserDefaults
 
     @Published var script: String {
         didSet {
@@ -41,7 +41,8 @@ final class PrompterModel: ObservableObject {
     private var anchor = Date()
     private var viewWidth: CGFloat = 0
 
-    init() {
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
         let script = defaults.string(forKey: "script") ?? Self.welcome
         self.script = script
         mirror = defaults.object(forKey: "mirror") as? Bool ?? true

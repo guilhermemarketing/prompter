@@ -62,7 +62,9 @@ struct PrompterApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     /// O motor (câmera, captura, atalhos) inicia com o app, sem depender de a janela aparecer.
     func applicationDidFinishLaunching(_ notification: Notification) {
-        MainActor.assumeIsolated { AppState.shared.bootstrap() }
+        MainActor.assumeIsolated {
+            if DemoRenderer.isRequested { DemoRenderer.run() } else { AppState.shared.bootstrap() }
+        }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
