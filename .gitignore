@@ -1,2 +1,10 @@
 .build/
 dist/
+
+# Segredos locais do mantenedor: nunca vão para o Git.
+envs/
+*.p12
+*.pfx
+*.pem
+*.key
+*sparkle-key*
