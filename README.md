@@ -98,6 +98,59 @@ Para videoaulas, cursos online e tutoriais, use o modo Tela: grave a tela inteir
   - fila de áudio sem descartes.
 - **Cor fiel:** os arquivos saem marcados como sRGB e ficam iguais à prévia.
 
+## Chroma key, luz automática, filtros e LUTs na webcam do Mac
+
+Tudo roda na GPU, em tempo real, e o que você vê na prévia é exatamente o que vai para o arquivo.
+
+### Chroma key no Mac sem tela verde
+
+O Prompter recorta você do fundo com a segmentação de pessoas da Apple, sem tela verde, sem pano e sem luz especial:
+
+- **Fundos sólidos:** verde, azul ou vermelho, para recortar depois no editor (Premiere, DaVinci, Final Cut, CapCut).
+- **Cel-shading:** visual de desenho, com força ajustável de 0 a 100%.
+- **Adesivo:** recorte com borda e contorno, como figurinha. A espessura e as cores são personalizáveis.
+
+<p align="center">
+  <img src="docs/chroma-key-mac-sem-tela-verde.jpg" alt="Chroma key no Mac sem tela verde: fundo verde, azul e vermelho e estilos cel-shading e adesivo no Prompter" width="900">
+</p>
+
+### Luz automática para webcam
+
+Com a luz automática ligada (tecla L), o app:
+
+- mede o brilho do rosto várias vezes por segundo;
+- corrige a exposição de forma suave, sem saltos no vídeo;
+- clareia as sombras e protege os realces.
+
+É o ajuste que salva gravações em quarto escuro ou com luz de janela variando.
+
+<p align="center">
+  <img src="docs/luz-automatica-webcam-mac.jpg" alt="Luz automática para webcam no Mac: o mesmo quadro escuro sem e com a correção de exposição pelo rosto" width="900">
+  <br><sub>Na imagem, o ambiente foi escurecido de propósito para mostrar a correção.</sub>
+</p>
+
+### Filtros e presets de cor
+
+Seis presets prontos: Natural, Nítido, Contraste, Suave, Luminoso e Cinema. Você também pode ajustar contraste, brilho, pretos, sombras, brancos, nitidez e matiz, e salvar seus próprios presets.
+
+<p align="center">
+  <img src="docs/filtros-presets-de-cor-webcam.jpg" alt="Filtros para webcam no Mac: presets de cor Natural, Nítido, Contraste, Suave, Luminoso e Cinema" width="900">
+</p>
+
+### LUTs .cube com intensidade ajustável
+
+Cinco LUTs incluídos: Vibrante, Cinema, Noir, Pop e Midsommar. Você também pode importar seus LUTs 3D `.cube` de até 64³. A intensidade vai de 0 a 100%, para um look sutil ou carregado.
+
+<p align="center">
+  <img src="docs/luts-cube-webcam-mac.jpg" alt="LUTs .cube na webcam do Mac: Original, Vibrante, Cinema, Noir, Pop e Midsommar" width="900">
+</p>
+
+<p align="center">
+  <img src="docs/intensidade-do-lut.gif" alt="Intensidade do LUT ajustável de 0 a 100% na webcam do Mac" width="640">
+</p>
+
+<sub>Todas as imagens desta seção foram geradas pelo próprio Prompter, com o mesmo processamento da gravação, a partir de uma foto de exemplo criada por IA.</sub>
+
 ## Baixar o teleprompter grátis para Mac
 
 <p align="center"><a href="https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip"><strong>⬇ Baixar o Prompter para macOS (grátis)</strong></a></p>
@@ -241,6 +294,18 @@ Não. O reconhecimento de voz roda no próprio Mac, e o roteiro, a voz e os víd
 
 Sim. O Prompter funciona em MacBook, iMac, Mac mini e Mac Studio com Apple Silicon e macOS 26 ou posterior. Use a câmera embutida ou uma webcam USB e o microfone do Mac ou um externo. Deixe o texto fixo junto da câmera embutida.
 
+### Dá para usar chroma key no Mac sem tela verde?
+
+Sim. O Prompter recorta você do fundo com a segmentação de pessoas da Apple, sem tela verde nem iluminação especial. Escolha fundo verde, azul ou vermelho para recortar na edição, ou os estilos cel-shading e adesivo para um visual pronto.
+
+### Como melhorar a iluminação da webcam no Mac?
+
+Ligue a luz automática do Prompter (tecla L). Ela mede o brilho do seu rosto várias vezes por segundo, corrige a exposição e clareia as sombras sem estourar o fundo. Para o resto, use os presets de cor ou ajuste contraste, brilho e sombras.
+
+### Posso usar LUT na webcam do Mac?
+
+Sim. O Prompter aplica LUTs .cube na prévia e na gravação, em tempo real. Ele vem com cinco LUTs (Vibrante, Cinema, Noir, Pop e Midsommar), importa os seus e deixa ajustar a intensidade de 0 a 100% para um efeito sutil.
+
 ### Dá para gravar a tela e a câmera ao mesmo tempo?
 
 Sim. Escolha o modo Tela e grave a tela inteira, uma janela ou uma área, com a sua câmera em destaque em círculo, quadrado ou retângulo. Arraste o destaque pela prévia e, para editar depois, salve também a tela e a câmera em arquivos separados.
@@ -255,6 +320,7 @@ Sim. Escolha o modo Tela e grave a tela inteira, uma janela ou uma área, com a 
 - **`PrompterLayout` + `PrompterTextView`:** TextKit, karaokê e rolagem a 120 Hz.
 - **`LipSync`:** medição e correção da sincronia labial.
 - **`DemoRenderer`:** gera a animação deste README com o mesmo código do app (`--demo-render ROTEIRO VOZ PASTA`).
+- **`LookRenderer`:** gera as imagens de chroma key, luz, presets e LUTs passando uma foto pelo `FrameProcessor` (`--render-looks FOTO PASTA`).
 
 `@ViewState` é um alias de `SwiftUI.State` para compilar sem o plugin de macros, que só acompanha o Xcode.
 
@@ -290,6 +356,13 @@ Prompter foi criado por [Gui, do gui.marketing](https://gui.marketing).
   - color adjustments with presets;
   - `.cube` LUTs (five included);
   - chroma-key backgrounds and cel-shading or sticker styles.
+
+<p align="center">
+  <img src="docs/chroma-key-mac-no-green-screen.jpg" alt="Chroma key on a Mac without a green screen: green, blue and red backgrounds plus cel-shading and sticker styles in Prompter" width="820">
+  <br><img src="docs/auto-light-webcam-mac.jpg" alt="Auto light for a Mac webcam: the same dark frame without and with face-based exposure correction" width="820">
+  <br><img src="docs/lut-intensity.gif" alt="Adjustable LUT intensity from 0 to 100% on a Mac webcam" width="640">
+  <br><sub>Rendered by Prompter itself, with the same processing as a recording, from an AI-generated sample photo.</sub>
+</p>
 - **Quality and audio:**
   - HEVC or ProRes 422 HQ;
   - dual-mono microphone;
@@ -313,6 +386,10 @@ To record Reels on a Mac, open Prompter, choose the 9:16 format and paste your s
 #### How do I record a video lesson on a Mac?
 
 To record a video lesson on a Mac, open Prompter, switch to Screen mode and pick a display, window or area. Your camera appears on top of the lesson. Read your script on the teleprompter or hide it with H, then record with R.
+
+#### Can I use chroma key on a Mac without a green screen?
+
+Yes. Prompter separates you from the background with Apple's person segmentation, so you need no green screen or special lighting. Pick a green, blue or red background to key out in editing, or the cel-shading and sticker styles for a finished look.
 
 **Install:** [download Prompter.zip](https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip), unzip it and move Prompter to Applications. On first launch, macOS cannot verify the developer: open **System Settings → Privacy & Security** and click **Open Anyway**. From version 2.3 on, Prompter updates itself through Sparkle: it checks GitHub once a day if you allow it, and installs updates with one click (use **Prompter → Check for Updates…** to check now). To build from source, you need the Xcode Command Line Tools: clone the repository and run `./build.sh --install`. The *Assinatura estável* section above shows how to create a local signing certificate, so macOS keeps camera, microphone and screen permissions across builds.
 

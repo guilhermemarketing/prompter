@@ -7,7 +7,7 @@ import AppKit
 /// Não abre câmera nem microfone e não toca nas preferências do usuário.
 @MainActor
 enum DemoRenderer {
-    static var isRequested: Bool { arguments != nil }
+    static var isRequested: Bool { arguments != nil || LookRenderer.arguments != nil }
 
     private static var arguments: (script: URL, audio: URL, output: URL)? {
         let args = CommandLine.arguments
@@ -23,6 +23,14 @@ enum DemoRenderer {
     static let fps = 15.0
 
     static func run() {
+        if let (input, output) = LookRenderer.arguments {
+            Task { @MainActor in
+                do { try await LookRenderer.render(input: input, output: output); print("looks: pronto em \(output.path)") }
+                catch { print("looks: falhou: \(error)") }
+                NSApp.terminate(nil)
+            }
+            return
+        }
         guard let (scriptURL, audioURL, output) = arguments else { return }
         Task { @MainActor in
             // Sem App Nap: em segundo plano o macOS desacelera o laço dos quadros.
