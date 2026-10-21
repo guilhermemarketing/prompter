@@ -13,9 +13,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.2</string>
+	<string>2.3</string>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>5</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -25,6 +25,12 @@
 		<string>en</string>
 		<string>pt</string>
 	</array>
+	<key>SUFeedURL</key>
+	<string>https://github.com/guilhermemarketing/prompter/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>FNUrShclepfsMpgRb9NZQ+rPmJj8i6uw24JUnMLHOm4=</string>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 	<key>NSHumanReadableCopyright</key>
 	<string>Criado por Gui · https://gui.marketing. Código aberto (MIT): github.com/guilhermemarketing/prompter</string>
 	<key>LSMinimumSystemVersion</key>

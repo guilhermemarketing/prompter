@@ -416,6 +416,8 @@ struct MoreMenu: View {
                     "Lip sync: \(Int(((capture.activeLatency ?? 0) * 1000).rounded())) ms compensated, auto-adjusted from speech"))
             Divider()
             Button(L("Abrir pasta de gravações", "Open recordings folder")) { capture.revealFolder() }
+            CheckForUpdatesButton()
+            AutomaticUpdatesToggle()
         } label: {
             // A área clicável é o quadro inteiro, não só o desenho das reticências.
             Image(systemName: "ellipsis")

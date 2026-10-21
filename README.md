@@ -120,6 +120,21 @@ xattr -dr com.apple.quarantine /Applications/Prompter.app
 
 Todas as versões e notas de mudança ficam em [Releases](https://github.com/guilhermemarketing/prompter/releases).
 
+## Atualizações
+
+A partir da versão 2.3, o Prompter se atualiza sozinho pelo [Sparkle](https://sparkle-project.org), o sistema de atualização usado pela maioria dos apps de Mac fora da App Store:
+
+- Na segunda abertura, o app pergunta se pode verificar atualizações automaticamente. Com o sim, ele consulta o GitHub uma vez por dia.
+- Quando há versão nova, aparece o aviso com as novidades e o botão **Instalar atualização**. O app baixa, instala e reabre. O passo "Abrir Mesmo Assim" não se repete.
+- Para verificar na hora, use **Prompter → Verificar atualizações…** ou o menu **⋯** da barra.
+- Cada atualização é assinada com uma chave EdDSA (chave pública em `SUPublicEDKey`, no `Info.plist`). O app recusa pacotes sem essa assinatura.
+- Roteiro, ajustes e permissões de câmera, microfone e tela continuam depois de atualizar.
+- Para ligar ou desligar a verificação automática, use **⋯ → Verificar atualizações automaticamente**.
+
+**Se você tem a versão 2.2 ou anterior:** baixe a versão mais recente uma última vez e substitua o app em Aplicativos. Daí em diante, as atualizações chegam sozinhas.
+
+Para receber um e-mail a cada versão nova, use no GitHub **Watch → Custom → Releases**.
+
 ## Compilar a partir do código-fonte
 
 Precisa das Command Line Tools do Xcode (`xcode-select --install`). O Xcode completo não é necessário.
@@ -162,7 +177,7 @@ rm -P /tmp/k.pem /tmp/id.p12 /tmp/c.pem /tmp/prompter-cert.cnf
 
 ## Permissões e privacidade
 
-O app pede acesso à câmera e ao microfone. Para gravar a tela, pede também Gravação de Tela e Áudio do Sistema. Nada sai do Mac: transcrição, segmentação de pessoa e análise de sincronia rodam localmente. Na primeira vez em que o modo voz é usado num idioma, o macOS baixa o modelo de voz da Apple.
+O app pede acesso à câmera e ao microfone. Para gravar a tela, pede também Gravação de Tela e Áudio do Sistema. Nada sai do Mac: transcrição, segmentação de pessoa e análise de sincronia rodam localmente. Na primeira vez em que o modo voz é usado num idioma, o macOS baixa o modelo de voz da Apple. A única outra conexão é a verificação de atualizações (abaixo), que só consulta qual é a versão mais recente e pode ser desligada.
 
 Os vídeos ficam em `~/Movies/Prompter/`.
 
@@ -220,7 +235,7 @@ Sim. Pressione H ou clique no ícone de olho para ocultar o teleprompter, e o Pr
 
 ### O teleprompter precisa de internet?
 
-Não. O reconhecimento de voz do Prompter roda no próprio Mac, e o roteiro, a voz e os vídeos nunca saem do computador. A internet só é usada uma vez, quando o macOS baixa o modelo de voz da Apple para o idioma do roteiro.
+Não. O reconhecimento de voz roda no próprio Mac, e o roteiro, a voz e os vídeos nunca saem do computador. A internet só serve para baixar uma vez o modelo de voz da Apple e, se você permitir, verificar atualizações do app.
 
 ### O Prompter funciona em MacBook e iMac?
 
@@ -299,7 +314,7 @@ To record Reels on a Mac, open Prompter, choose the 9:16 format and paste your s
 
 To record a video lesson on a Mac, open Prompter, switch to Screen mode and pick a display, window or area. Your camera appears on top of the lesson. Read your script on the teleprompter or hide it with H, then record with R.
 
-**Install:** [download Prompter.zip](https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip), unzip it and move Prompter to Applications. On first launch, macOS cannot verify the developer: open **System Settings → Privacy & Security** and click **Open Anyway**. To build from source, you need the Xcode Command Line Tools: clone the repository and run `./build.sh --install`. The *Assinatura estável* section above shows how to create a local signing certificate, so macOS keeps camera, microphone and screen permissions across builds.
+**Install:** [download Prompter.zip](https://github.com/guilhermemarketing/prompter/releases/latest/download/Prompter.zip), unzip it and move Prompter to Applications. On first launch, macOS cannot verify the developer: open **System Settings → Privacy & Security** and click **Open Anyway**. From version 2.3 on, Prompter updates itself through Sparkle: it checks GitHub once a day if you allow it, and installs updates with one click (use **Prompter → Check for Updates…** to check now). To build from source, you need the Xcode Command Line Tools: clone the repository and run `./build.sh --install`. The *Assinatura estável* section above shows how to create a local signing certificate, so macOS keeps camera, microphone and screen permissions across builds.
 
 The interface follows your Mac's language: Portuguese on Portuguese systems, English everywhere else.
 

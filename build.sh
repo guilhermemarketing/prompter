@@ -29,18 +29,30 @@ cp Resources/Info.plist "$STAGE/Contents/Info.plist"
 cp Resources/AppIcon.icns "$STAGE/Contents/Resources/AppIcon.icns"
 # Localizações: o macOS escolhe português ou inglês (os demais idiomas caem no inglês).
 for LPROJ in Resources/*.lproj; do cp -R "$LPROJ" "$STAGE/Contents/Resources/"; done
+# Sparkle (atualizações), vindo do artefato binário do SwiftPM.
+SPARKLE="$(find "$SCRATCH/artifacts" -path "*macos-arm64_x86_64/Sparkle.framework" -maxdepth 6 -type d | head -1)"
+mkdir -p "$STAGE/Contents/Frameworks"
+ditto "$SPARKLE" "$STAGE/Contents/Frameworks/Sparkle.framework"
 xattr -cr "$STAGE"
 
 # Com um certificado de assinatura no Chaves (veja o README), a identidade do app não muda entre
 # builds e o macOS mantém as permissões de câmera, microfone e Gravação de Tela. Sem ele, ad-hoc.
 IDENTITY="${PROMPTER_SIGNING_IDENTITY:-Prompter Local Signing}"
 if security find-identity -p codesigning 2>/dev/null | grep "\"$IDENTITY\"" >/dev/null; then
-  codesign --force --sign "$IDENTITY" --timestamp=none "$STAGE"
+  SIGN="$IDENTITY"
 else
   echo "Aviso: certificado \"$IDENTITY\" ausente; usando assinatura ad-hoc (permissões caem a cada build)."
-  codesign --force --sign - --timestamp=none "$STAGE"
+  SIGN="-"
 fi
-codesign --verify --strict "$STAGE"
+# O Sparkle é assinado de dentro para fora, com a mesma identidade do app.
+FW="$STAGE/Contents/Frameworks/Sparkle.framework/Versions/B"
+codesign --force --sign "$SIGN" --timestamp=none -o runtime "$FW/XPCServices/Installer.xpc"
+codesign --force --sign "$SIGN" --timestamp=none -o runtime --preserve-metadata=entitlements "$FW/XPCServices/Downloader.xpc"
+codesign --force --sign "$SIGN" --timestamp=none -o runtime "$FW/Autoupdate"
+codesign --force --sign "$SIGN" --timestamp=none -o runtime "$FW/Updater.app"
+codesign --force --sign "$SIGN" --timestamp=none -o runtime "$STAGE/Contents/Frameworks/Sparkle.framework"
+codesign --force --sign "$SIGN" --timestamp=none "$STAGE"
+codesign --verify --deep --strict "$STAGE"
 
 # Cópia de conveniência no projeto (dentro do iCloud a assinatura pode não validar; instale com --install).
 rm -rf dist/Prompter.app

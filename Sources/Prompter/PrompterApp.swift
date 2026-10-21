@@ -5,6 +5,12 @@ struct PrompterApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @ObservedObject private var app = AppState.shared
 
+    init() {
+        // Sem restauração de janelas do macOS: depois de um encerramento forçado o estado salvo diz
+        // "nenhuma janela" e a janela principal não abriria. As janelas abrem sempre do zero.
+        UserDefaults.standard.register(defaults: ["ApplePersistenceIgnoreState": true])
+    }
+
     var body: some Scene {
         Window("Prompter", id: "main") {
             ContentView()
@@ -18,10 +24,13 @@ struct PrompterApp: App {
         .windowBackgroundDragBehavior(.enabled)
         .defaultSize(width: 1120, height: 700)
         .defaultPosition(.top)
-        // Sempre abre a janela principal, mesmo que a restauração do macOS não a traga.
+        // Sempre abre a janela principal. Sem restauração: se o app foi encerrado à força, o estado
+        // salvo do macOS diz "sem janelas" e a janela principal deixaria de abrir.
         .defaultLaunchBehavior(.presented)
+        .restorationBehavior(.disabled)
         .commands {
             CommandGroup(replacing: .newItem) {}
+            CommandGroup(after: .appInfo) { CheckForUpdatesButton() }
             CommandMenu(L("Controles", "Controls")) {
                 Button(app.isRecordingOrCounting ? L("Parar gravação", "Stop recording") : L("Gravar", "Record")) { app.toggleRecording() }
                     .keyboardShortcut("r")

@@ -103,6 +103,25 @@ final class PrompterPanels {
     }
 }
 
+/// "×" do teleprompter: oculta o texto (o mesmo que H) e deixa o app só gravando.
+struct PrompterCloseButton: View {
+    @ViewState private var hovering = false
+
+    var body: some View {
+        Button { AppState.shared.setTeleprompter(false) } label: {
+            Image(systemName: "xmark")
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(.white.opacity(hovering ? 0.95 : 0.6))
+                .frame(width: 24, height: 24)
+                .background(Circle().fill(.white.opacity(hovering ? 0.22 : 0.1)))
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .help(L("Fechar o teleprompter (só gravar)  H", "Close the teleprompter (record only)  H"))
+        .onHover { hovering = $0 }
+    }
+}
+
 struct FloatingPrompterView: View {
     let model: PrompterModel
 
@@ -120,6 +139,7 @@ struct FloatingPrompterView: View {
                 .padding(.top, 8)
                 .allowsHitTesting(false)
         }
+        .overlay(alignment: .topTrailing) { PrompterCloseButton().padding(10) }
         .ignoresSafeArea()
         .help(L("Arraste para mover; puxe as bordas para redimensionar", "Drag to move; pull the edges to resize"))
     }
@@ -136,6 +156,8 @@ struct TopPrompterView: View {
                 .padding(.top, 6)
                 .allowsHitTesting(false)
         }
+        // Embaixo à direita: longe da câmera e do notch.
+        .overlay(alignment: .bottomTrailing) { PrompterCloseButton().padding(14) }
         .ignoresSafeArea()
     }
 }

@@ -43,6 +43,12 @@ struct ContentView: View {
                         .frame(height: geo.size.height * 0.5)
                         .allowsHitTesting(false)
 
+                    PrompterCloseButton()
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.top, capture.recordingStartedAt == nil ? 14 : 58)
+                        .padding(.trailing, 14)
+                        .opacity(controlsVisible ? 1 : 0)
+
                     if prompter.script.isEmpty {
                         Text(L("Pressione E para escrever seu roteiro.", "Press E to write your script."))
                             .font(.system(size: 28, weight: .semibold))
@@ -98,7 +104,10 @@ struct ContentView: View {
         .animation(.smooth(duration: 0.25), value: prompter.isEditing)
         .animation(.smooth(duration: 0.3), value: app.toast)
         .animation(.smooth(duration: 0.3), value: capture.recordingStartedAt)
-        .onAppear { app.bootstrap() }
+        .onAppear {
+            app.bootstrap()
+            DispatchQueue.main.async { Updater.shared.start() }
+        }
     }
 
     /// Maior retângulo com a proporção do vídeo que cabe na janela.
