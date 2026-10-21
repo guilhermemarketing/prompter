@@ -43,6 +43,7 @@ for line in open(sys.argv[1], encoding="utf-8").read().splitlines():
     text = html.escape(line.strip())
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
     text = re.sub(r"`(.+?)`", r"<code>\1</code>", text)
+    text = re.sub(r"\[(.+?)\]\((https?://[^)]+)\)", r'<a href="\2">\1</a>', text)
     if line.lstrip().startswith(("- ", "* ")):
         if not in_list: out.append("<ul>"); in_list = True
         out.append(f"<li>{text[2:]}</li>")
