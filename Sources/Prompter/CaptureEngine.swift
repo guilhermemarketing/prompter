@@ -96,13 +96,29 @@ final class CaptureEngine: NSObject, ObservableObject {
     @Published private(set) var syncTrim: [String: Double] =
         UserDefaults.standard.dictionary(forKey: "cameraSyncTrim") as? [String: Double] ?? [:]
 
-    /// Latência medida da câmera em uso (nil = ainda não calibrada).
-    var activeLatency: Double? { cameraLatency[activeCameraID] }
+    /// Compensação aprendida por combinação câmera + formato + microfone. A latência da câmera muda
+    /// com o formato (a mesma câmera em 4K e em HD difere) e a do microfone com o aparelho (USB,
+    /// embutido, Bluetooth). Negativa quando o áudio chega depois da imagem.
+    @Published private(set) var syncLatency: [String: Double] =
+        UserDefaults.standard.dictionary(forKey: "syncLatency") as? [String: Double] ?? [:]
+    /// Formato ativo da câmera ("1920x1080@30"), gravado na fila da sessão.
+    private var activeFormatKey = ""
+    static let latencyRange: ClosedRange<Double> = -0.5...0.5
+
+    /// Chave da combinação em uso.
+    var syncKey: String { "\(activeCameraID)|\(lock.withLock { activeFormatKey })|\(activeMicID)" }
+
+    /// Latência da combinação; sem medição própria, usa a da câmera (versões anteriores).
+    func latency(forKey key: String, camera: String) -> Double? { syncLatency[key] ?? cameraLatency[camera] }
+    func hasLearned(_ key: String) -> Bool { syncLatency[key] != nil }
+
+    /// Latência em uso (nil = ainda não calibrada).
+    var activeLatency: Double? { latency(forKey: syncKey, camera: activeCameraID) }
     var activeTrim: Double { syncTrim[activeCameraID] ?? 0 }
 
-    func setLatency(_ seconds: Double, forCamera id: String) {
-        cameraLatency[id] = seconds
-        UserDefaults.standard.set(cameraLatency, forKey: "cameraLatency")
+    func setLatency(_ seconds: Double, forKey key: String) {
+        syncLatency[key] = min(max(seconds, Self.latencyRange.lowerBound), Self.latencyRange.upperBound)
+        UserDefaults.standard.set(syncLatency, forKey: "syncLatency")
         refreshLiveLatency()
     }
 
@@ -115,7 +131,7 @@ final class CaptureEngine: NSObject, ObservableObject {
 
     /// Compensação aplicada na fila de captura: latência medida + ajuste fino.
     private func refreshLiveLatency() {
-        let total = max(0, (cameraLatency[activeCameraID] ?? 0) + (syncTrim[activeCameraID] ?? 0))
+        let total = min(max((activeLatency ?? 0) + activeTrim, Self.latencyRange.lowerBound), Self.latencyRange.upperBound)
         lock.withLock { liveLatency = total }
     }
 
@@ -297,8 +313,8 @@ final class CaptureEngine: NSObject, ObservableObject {
             : nil
         // O substituto só vale enquanto o preferido estiver ausente; a preferência fica intacta.
         activeCameraID = camera?.uniqueID ?? ""
-        refreshLiveLatency()
         activeMicID = mic?.uniqueID ?? ""
+        refreshLiveLatency()
         if let camera { updateCapabilities(for: camera) }
         let settings = Self.cameraSettings(self.effective, screen: screen)
         let target = cameraFormatTarget()
@@ -385,6 +401,13 @@ final class CaptureEngine: NSObject, ObservableObject {
         if device.activeFormat != format { device.activeFormat = format }
         let d = Self.dimensions(format)
         screenLog.info("formato da câmera: \(d.width)x\(d.height) @ \(settings.frameRate) fps")
+        let formatKey = "\(d.width)x\(d.height)@\(settings.frameRate)"
+        if lock.withLock({ () -> Bool in defer { activeFormatKey = formatKey }; return activeFormatKey != formatKey }) {
+            DispatchQueue.main.async { [self] in
+                refreshLiveLatency()
+                objectWillChange.send()
+            }
+        }
         let fps = Double(settings.frameRate)
         if let range = format.videoSupportedFrameRateRanges.first(where: {
             $0.minFrameRate <= fps + 0.5 && $0.maxFrameRate >= fps - 0.5

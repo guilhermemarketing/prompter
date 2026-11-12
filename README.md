@@ -318,7 +318,7 @@ Sim. Escolha o modo Tela e grave a tela inteira, uma janela ou uma área, com a 
 - **`MovieWriter`:** AVAssetWriter com fila de áudio e preenchimento de lacunas.
 - **`SpeechFollower` + `ScriptAligner`:** voz → posição no roteiro.
 - **`PrompterLayout` + `PrompterTextView`:** TextKit, karaokê e rolagem a 120 Hz.
-- **`LipSync`:** medição e correção da sincronia labial.
+- **`LipSync`:** medição e correção da sincronia labial, nos dois sentidos (−500 a +500 ms). Para medir ou corrigir um arquivo: `--measure-sync ARQUIVO` ou `--fix-sync ARQUIVO`.
 - **`DemoRenderer`:** gera a animação deste README com o mesmo código do app (`--demo-render ROTEIRO VOZ PASTA`).
 - **`LookRenderer`:** gera as imagens de chroma key, luz, presets e LUTs passando uma foto pelo `FrameProcessor` (`--render-looks FOTO PASTA`).
 

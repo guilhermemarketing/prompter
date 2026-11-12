@@ -7,7 +7,16 @@ import AppKit
 /// Não abre câmera nem microfone e não toca nas preferências do usuário.
 @MainActor
 enum DemoRenderer {
-    static var isRequested: Bool { arguments != nil || LookRenderer.arguments != nil }
+    static var isRequested: Bool { arguments != nil || LookRenderer.arguments != nil || syncArguments != nil }
+
+    /// `--measure-sync ARQUIVO.mov`: mede a sincronia labial em janelas de 60 s, sem alterar o arquivo.
+    private static var syncArguments: URL? {
+        let args = CommandLine.arguments
+        guard let i = args.firstIndex(of: "--measure-sync") ?? args.firstIndex(of: "--fix-sync"), args.count > i + 1 else { return nil }
+        return URL(fileURLWithPath: args[i + 1])
+    }
+    /// `--fix-sync ARQUIVO.mov`: aplica a mesma correção pós-gravação do app (desloca o áudio).
+    private static var fixesSync: Bool { CommandLine.arguments.contains("--fix-sync") }
 
     private static var arguments: (script: URL, audio: URL, output: URL)? {
         let args = CommandLine.arguments
@@ -23,6 +32,36 @@ enum DemoRenderer {
     static let fps = 15.0
 
     static func run() {
+        if let url = syncArguments {
+            Task { @MainActor in
+                let duration = (try? await AVURLAsset(url: url).load(.duration).seconds) ?? 0
+                print(String(format: "sync: %@ (%.0f s)", url.lastPathComponent, duration))
+                if fixesSync {
+                    if let estimate = await LipSync.estimate(url), estimate.isReliable,
+                       abs(estimate.residual) >= 0.03, abs(estimate.residual) <= 0.4 {
+                        do {
+                            try await LipSync.shiftAudio(in: url, by: estimate.residual)
+                            print(String(format: "sync: áudio deslocado %+.0f ms", estimate.residual * 1000))
+                        } catch { print("sync: falhou: \(error)") }
+                    } else { print("sync: nada a corrigir") }
+                }
+                for start in stride(from: 0.0, to: max(duration - 30, 1), by: 60) {
+                    let points = await LipSync.profile(url, maxSeconds: 60, start: start)
+                    let valid = points.filter { !$0.correlation.isNaN }
+                    let peaks = valid.indices.filter { i in
+                        (i == 0 || valid[i].correlation >= valid[i - 1].correlation) &&
+                        (i == valid.count - 1 || valid[i].correlation >= valid[i + 1].correlation)
+                    }.sorted { valid[$0].correlation > valid[$1].correlation }.prefix(3)
+                    let text = peaks.map { String(format: "%+.0f ms (r=%.2f)", valid[$0].lag * 1000, valid[$0].correlation) }
+                    let estimate = await LipSync.estimate(url, maxSeconds: 60, start: start)
+                    print(String(format: "sync: %4.0f s · picos %@ · residual %+.0f ms, confiável %@", start,
+                                 text.joined(separator: ", "), (estimate?.residual ?? .nan) * 1000,
+                                 estimate?.isReliable == true ? "sim" : "não"))
+                }
+                NSApp.terminate(nil)
+            }
+            return
+        }
         if let (input, output) = LookRenderer.arguments {
             Task { @MainActor in
                 do { try await LookRenderer.render(input: input, output: output); print("looks: pronto em \(output.path)") }

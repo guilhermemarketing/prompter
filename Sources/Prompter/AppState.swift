@@ -202,6 +202,7 @@ final class AppState: ObservableObject {
         let references = candidates.isEmpty ? Array(files.prefix(1)) : candidates
         guard !references.isEmpty else { return }
         let cameraID = capture.activeCameraID
+        let syncKey = capture.syncKey
         Task.detached(priority: .utility) { [weak self] in
             var found: LipSync.Estimate?
             for reference in references {
@@ -217,9 +218,11 @@ final class AppState: ObservableObject {
             }
             await MainActor.run { [weak self] in
                 guard let self, fixed > 0 else { return }
-                // Metade do caminho: a próxima sessão tende a parecer com esta, mas varia.
-                let current = capture.cameraLatency[cameraID] ?? 0
-                capture.setLatency(min(max(current + estimate.residual / 2, 0), 0.5), forCamera: cameraID)
+                // Primeira medição desta combinação: aprende o valor inteiro. Depois, metade do
+                // caminho: a próxima sessão tende a parecer com esta, mas varia.
+                let current = capture.latency(forKey: syncKey, camera: cameraID) ?? 0
+                let step = capture.hasLearned(syncKey) ? estimate.residual / 2 : estimate.residual
+                capture.setLatency(current + step, forKey: syncKey)
                 let ms = "\(estimate.residual > 0 ? "+" : "")\(Int((estimate.residual * 1000).rounded())) ms"
                 show(L("Sincronia labial corrigida nesta gravação (\(ms))", "Lip sync corrected in this recording (\(ms))"), .saved(url))
             }

@@ -21,12 +21,28 @@ enum LipSync {
     /// Antecipação natural da boca em relação ao som, na escala deste medidor.
     static let naturalLead = -0.075
 
-    static func estimate(_ url: URL, maxSeconds: Double = 120) async -> Estimate? {
+    /// Atrasos testados (passos de 5 ms). Simétrico: a compensação de latência da câmera pode
+    /// errar para os dois lados, e um intervalo só positivo não enxerga o áudio atrasado.
+    static var searchLags: ClosedRange<Int> = -100...100     // −500…+500 ms
+
+    static func estimate(_ url: URL, maxSeconds: Double = 120, start: Double = 0) async -> Estimate? {
+        guard let (times, mouth, pcm) = await samples(url, maxSeconds: maxSeconds, start: start) else { return nil }
+        return analyze(times: times, mouth: mouth, pcm: pcm, sampleRate: 48_000)
+    }
+
+    /// Curva de correlação por atraso (s), para diagnóstico (`--measure-sync`).
+    static func profile(_ url: URL, maxSeconds: Double, start: Double) async -> [(lag: Double, correlation: Double)] {
+        guard let (times, mouth, pcm) = await samples(url, maxSeconds: maxSeconds, start: start) else { return [] }
+        return curve(times: times, mouth: mouth, pcm: pcm, sampleRate: 48_000)?.map { ($0.lag, $0.value) } ?? []
+    }
+
+    private static func samples(_ url: URL, maxSeconds: Double, start: Double) async -> ([Double], [Double], [Float])? {
         let asset = AVURLAsset(url: url)
         guard let video = try? await asset.loadTracks(withMediaType: .video).first,
               let audioTrack = try? await asset.loadTracks(withMediaType: .audio).first,
               let reader = try? AVAssetReader(asset: asset) else { return nil }
-        reader.timeRange = CMTimeRange(start: .zero, duration: CMTime(seconds: maxSeconds, preferredTimescale: 600))
+        reader.timeRange = CMTimeRange(start: CMTime(seconds: start, preferredTimescale: 600),
+                                       duration: CMTime(seconds: maxSeconds, preferredTimescale: 600))
         let videoOut = AVAssetReaderTrackOutput(track: video, outputSettings: [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
         ])
@@ -45,7 +61,7 @@ enum LipSync {
         while !(videoDone && audioDone) {
             if !videoDone {
                 if let sample = videoOut.copyNextSampleBuffer(), let buffer = CMSampleBufferGetImageBuffer(sample) {
-                    times.append(CMSampleBufferGetPresentationTimeStamp(sample).seconds)
+                    times.append(CMSampleBufferGetPresentationTimeStamp(sample).seconds - start)
                     mouth.append(mouthOpening(buffer, request: request))
                 } else { videoDone = true }
             }
@@ -62,7 +78,7 @@ enum LipSync {
                 } else { audioDone = true }
             }
         }
-        return analyze(times: times, mouth: mouth, pcm: pcm, sampleRate: 48_000)
+        return (times, mouth, pcm)
     }
 
     private static func mouthOpening(_ buffer: CVPixelBuffer, request: VNDetectFaceLandmarksRequest) -> Double {
@@ -77,6 +93,15 @@ enum LipSync {
     }
 
     static func analyze(times: [Double], mouth: [Double], pcm: [Float], sampleRate: Double) -> Estimate? {
+        guard let points = curve(times: times, mouth: mouth, pcm: pcm, sampleRate: sampleRate),
+              let best = points.indices.filter({ !points[$0].value.isNaN }).max(by: { points[$0].value < points[$1].value })
+        else { return nil }
+        let far = points.indices.filter { abs($0 - best) > 30 && !points[$0].value.isNaN }.map { points[$0].value }
+        let sharpness = points[best].value - (far.isEmpty ? 0 : far.reduce(0, +) / Double(far.count))
+        return Estimate(residual: points[best].lag - naturalLead, correlation: points[best].value, sharpness: sharpness)
+    }
+
+    private static func curve(times: [Double], mouth: [Double], pcm: [Float], sampleRate: Double) -> [(lag: Double, value: Double)]? {
         // Voz: passa-alta simples e envelope log a 200 Hz.
         let rate = 200.0, hop = Int(sampleRate / rate)
         // Pelo menos ~5 s de vídeo e de voz.
@@ -98,13 +123,7 @@ enum LipSync {
             resampled[i] = mouth[j] + (mouth[j + 1] - mouth[j]) * (t - times[j]) / (times[j + 1] - times[j])
         }
         let a = band(envelope), m = band(resampled)
-        let lags = Array(-20...60)     // −100…+300 ms em passos de 5 ms
-        let curve = lags.map { correlation(a, m, lag: $0) }
-        guard let best = curve.indices.filter({ !curve[$0].isNaN }).max(by: { curve[$0] < curve[$1] }) else { return nil }
-        let far = curve.indices.filter { abs($0 - best) > 30 && !curve[$0].isNaN }.map { curve[$0] }
-        let sharpness = curve[best] - (far.isEmpty ? 0 : far.reduce(0, +) / Double(far.count))
-        let lag = Double(lags[best]) * 0.005
-        return Estimate(residual: lag - naturalLead, correlation: curve[best], sharpness: sharpness)
+        return searchLags.map { (Double($0) * 0.005, correlation(a, m, lag: $0)) }
     }
 
     /// Faixa silábica: média móvel de 85 ms menos média de 600 ms.
