@@ -190,6 +190,18 @@ struct VideoSettings: Codable, Equatable {
     /// LUT ativo (id da `LUTLibrary`) e intensidade 0…1.
     var lutID: String? = nil
     var lutIntensity: Double = 1
+    /// Zoom digital (1× = enquadramento inteiro).
+    var zoom: Double = 1
+    /// Enquadramento automático: o recorte acompanha o rosto (gimbal virtual).
+    var autoFrame = false
+
+    static let zoomRange: ClosedRange<Double> = 1...3
+    /// Paradas do selo de zoom.
+    static let zoomSteps: [Double] = [1, 1.2, 1.5, 2, 3]
+    /// Zoom inicial do enquadramento automático em 16:9 (a 1× o quadro não tem margem para se mover).
+    static let autoFrameStartZoom = 1.15
+    /// Zoom ou enquadramento automático pedem um formato de câmera maior, para o recorte não perder nitidez.
+    var needsZoomHeadroom: Bool { zoom > 1.01 || autoFrame }
 
     static let stickerBorderRange: ClosedRange<Double> = 0...80
     static let stickerOutlineRange: ClosedRange<Double> = 0...30
@@ -220,6 +232,8 @@ struct VideoSettings: Codable, Equatable {
         stickerOutlineWidth = (try? c.decodeIfPresent(Double.self, forKey: .stickerOutlineWidth)) ?? d.stickerOutlineWidth
         lutID = (try? c.decodeIfPresent(String.self, forKey: .lutID)) ?? d.lutID
         lutIntensity = (try? c.decodeIfPresent(Double.self, forKey: .lutIntensity)) ?? d.lutIntensity
+        zoom = min(max((try? c.decodeIfPresent(Double.self, forKey: .zoom)) ?? d.zoom, Self.zoomRange.lowerBound), Self.zoomRange.upperBound)
+        autoFrame = (try? c.decodeIfPresent(Bool.self, forKey: .autoFrame)) ?? d.autoFrame
     }
 
     /// Dimensões exatas do arquivo final (sempre pares).

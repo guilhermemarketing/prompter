@@ -9,7 +9,8 @@ Prompter is a native macOS teleprompter with camera and screen recording. It is 
 - `@ViewState` is an alias of `SwiftUI.State`, because the Command Line Tools do not ship the macro plugin.
 - To render the README animation, run `--demo-render SCRIPT AUDIO FOLDER`.
 - Lip sync is learned per camera + camera format + microphone (`syncLatency` in the preferences). Use `--measure-sync FILE` to measure a recording without changing it, and `--fix-sync FILE` to apply the same audio shift the app applies after recording.
-- To render the README chroma, light, preset and LUT images, run `--render-looks PHOTO FOLDER`. It passes the photo through the real `FrameProcessor`.
+- To render the README chroma, light, preset, LUT and zoom images, run `--render-looks PHOTO FOLDER`. It passes the photo through the real `FrameProcessor`. To render the auto-framing simulation (the subject moving across the frame), run `--render-framing-demo PHOTO FOLDER`.
+- Digital zoom and auto framing live in `FrameProcessor.framingCrop`. Auto framing keeps headroom above the head (`hairAboveFace`, `headroom`) and caps the zoom so the whole head fits (`neckBelowFace`); in 16:9 it starts at `autoFrameStartZoom` because a 1× crop has no room to move. When zoom > 1 or auto framing is on, `bestFormat` asks for 2× resolution headroom. It does not switch the camera format during a recording.
 - Updates use Sparkle 2, added through SwiftPM. `build.sh` embeds `Sparkle.framework` and signs it from the inside out. The feed is the `appcast.xml` asset of the latest GitHub Release, and the public EdDSA key is `SUPublicEDKey` in `Resources/Info.plist`.
 - To publish a version:
   1. Raise `CFBundleShortVersionString` and `CFBundleVersion` in `Resources/Info.plist`. `CFBundleVersion` must increase every time.

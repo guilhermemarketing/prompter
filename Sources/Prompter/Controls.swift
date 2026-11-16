@@ -62,6 +62,8 @@ struct ControlsBar: View {
                     .disabled(capture.isRecording)
             }
             ScreenButton()
+            ZoomBadge()
+            AutoFrameButton()
             LightButton()
             AdjustmentsButton()
             LUTButton()
@@ -193,6 +195,90 @@ struct AspectBadge: View {
         .buttonStyle(.plain)
         .disabled(capture.isRecording)
         .help(L("Formato \(aspect.rawValue) — clique para alternar  F", "Format \(aspect.rawValue) — click to switch  F"))
+        .onHover { hovering = $0 }
+    }
+}
+
+/// Zoom digital: − afasta, + aproxima e o selo do meio alterna as paradas (1× → 1,2× → 1,5× → 2× → 3×),
+/// como na Câmera do iPhone. Pinça no trackpad ajusta de forma contínua.
+struct ZoomBadge: View {
+    @EnvironmentObject private var app: AppState
+    @EnvironmentObject private var capture: CaptureEngine
+    @ViewState private var hovering = false
+
+    var body: some View {
+        let zoom = capture.settings.zoom
+        HStack(spacing: 0) {
+            ZoomStepButton(symbol: "minus", help: L("Afastar  ⌥⌘−", "Zoom out  ⌥⌘−")) { app.stepZoom(-1) }
+                .disabled(zoom <= VideoSettings.zoomRange.lowerBound + 0.01)
+            Button { app.cycleZoom() } label: {
+                Text(Self.label(zoom))
+                    .font(.system(size: 11, weight: .heavy, design: .rounded).monospacedDigit())
+                    .foregroundStyle(zoom > 1.01 ? Color.yellow : Color.white)
+                    .frame(width: 30, height: 22)
+                    .background(Circle().fill(.white.opacity(hovering ? 0.22 : 0.12)).frame(width: 30, height: 30))
+                    .frame(width: 34, height: 32)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(L("Zoom digital \(Self.label(zoom)) — clique para alternar; pinça no trackpad ajusta  Z",
+                    "Digital zoom \(Self.label(zoom)) — click to switch; pinch on the trackpad to adjust  Z"))
+            .onHover { hovering = $0 }
+            ZoomStepButton(symbol: "plus", help: L("Aproximar  ⌥⌘=", "Zoom in  ⌥⌘=")) { app.stepZoom(1) }
+                .disabled(zoom >= VideoSettings.zoomRange.upperBound - 0.01)
+        }
+    }
+
+    static func label(_ zoom: Double) -> String {
+        let rounded = (zoom * 10).rounded() / 10
+        let text = rounded == rounded.rounded() ? String(Int(rounded)) : String(format: "%.1f", rounded)
+        return (AppLanguage.isPortuguese ? text.replacingOccurrences(of: ".", with: ",") : text) + "×"
+    }
+}
+
+private struct ZoomStepButton: View {
+    let symbol: String
+    let help: String
+    let action: () -> Void
+    @Environment(\.isEnabled) private var isEnabled
+    @ViewState private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(.white.opacity(isEnabled ? 0.9 : 0.3))
+                .frame(width: 20, height: 32)
+                .background(Capsule().fill(.white.opacity(hovering && isEnabled ? 0.14 : 0)).frame(width: 20, height: 24))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .help(help)
+        .onHover { hovering = $0 }
+    }
+}
+
+/// Enquadramento automático (gimbal virtual): liga e desliga.
+struct AutoFrameButton: View {
+    @EnvironmentObject private var app: AppState
+    @EnvironmentObject private var capture: CaptureEngine
+    @ViewState private var hovering = false
+
+    var body: some View {
+        let on = capture.settings.autoFrame
+        Button { app.toggleAutoFrame() } label: {
+            Image(systemName: on ? "person.crop.rectangle.fill" : "person.crop.rectangle")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(on ? Color.yellow : Color.white)
+                .contentTransition(.symbolEffect(.replace))
+                .frame(width: 34, height: 32)
+                .background(Circle().fill(.white.opacity(hovering ? 0.14 : 0)))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .help(on
+              ? L("Enquadramento automático ligado: o quadro acompanha o seu rosto  G", "Auto framing on: the frame follows your face  G")
+              : L("Enquadramento automático desligado  G", "Auto framing off  G"))
         .onHover { hovering = $0 }
     }
 }

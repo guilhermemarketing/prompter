@@ -53,6 +53,10 @@ final class CaptureEngine: NSObject, ObservableObject {
             if settings.resolution != oldValue.resolution || settings.frameRate != oldValue.frameRate
                 || settings.aspect != oldValue.aspect {
                 applyInputs()
+            } else if settings.needsZoomHeadroom != oldValue.needsZoomHeadroom, !isRecording {
+                // Zoom/enquadramento pedem (ou dispensam) um formato maior. Durante a gravação o
+                // formato fica como está: trocar no meio corta o vídeo; o zoom segue funcionando.
+                applyInputs()
             }
         }
     }
@@ -389,7 +393,9 @@ final class CaptureEngine: NSObject, ObservableObject {
             let d = dimensions(format)
             return d.width * d.height
         }
-        let covering = candidates.filter { coverage($0) >= 0.98 }
+        // Com zoom digital ou enquadramento automático, sobra resolução para recortar (até 2×).
+        let wanted: CGFloat = settings.needsZoomHeadroom ? 2 : 0.98
+        let covering = candidates.filter { coverage($0) >= wanted }
         if let smallest = covering.min(by: { pixels($0) < pixels($1) }) { return smallest }
         return candidates.max { pixels($0) < pixels($1) }
     }

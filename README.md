@@ -98,7 +98,7 @@ Para videoaulas, cursos online e tutoriais, use o modo Tela: grave a tela inteir
   - fila de áudio sem descartes.
 - **Cor fiel:** os arquivos saem marcados como sRGB e ficam iguais à prévia.
 
-## Chroma key, luz automática, filtros e LUTs na webcam do Mac
+## Zoom, enquadramento automático, chroma key, luz, filtros e LUTs na webcam do Mac
 
 Tudo roda na GPU, em tempo real, e o que você vê na prévia é exatamente o que vai para o arquivo.
 
@@ -147,6 +147,38 @@ Cinco LUTs incluídos: Vibrante, Cinema, Noir, Pop e Midsommar. Você também po
 
 <p align="center">
   <img src="docs/intensidade-do-lut.gif" alt="Intensidade do LUT ajustável de 0 a 100% na webcam do Mac" width="640">
+</p>
+
+### Zoom digital
+
+Aproxime e afaste a imagem da câmera sem mexer na câmera:
+
+- **Botões − e +:** afastam e aproximam a imagem, de 1× até 3×.
+- **Selo de zoom:** clique para alternar entre 1×, 1,2×, 1,5×, 2× e 3×, como na Câmera do iPhone (tecla Z).
+- **Pinça no trackpad:** ajuste contínuo do zoom.
+- **Atalhos:** ⌥⌘= para aproximar, ⌥⌘− para afastar e ⌥⌘0 para voltar a 1×.
+
+O zoom é aplicado na prévia e na gravação, com transição suave. Para não perder nitidez, o app passa a capturar no maior formato da câmera quando o zoom está ativo. Uma câmera 4K aguenta até 2× sem perda em vídeos 1080p.
+
+<p align="center">
+  <img src="docs/zoom-digital-webcam-mac.jpg" alt="Zoom digital na webcam do Mac: 1×, 1,5× e 2× no Prompter" width="900">
+</p>
+
+### Enquadramento automático (gimbal virtual)
+
+Opcional: ligue e desligue no botão de pessoa da barra ou pela tecla G. Com ele ligado, o Prompter:
+
+- detecta o seu rosto;
+- move o recorte da imagem para manter você no centro, com os olhos no terço superior;
+- deixa sempre uma folga acima da cabeça, para facilitar recortes na edição, e afasta o zoom quando você chega perto demais;
+- ignora movimentos pequenos;
+- acompanha os grandes com suavidade, como um gimbal.
+
+É ideal para Reels em 9:16, em que a imagem da câmera deixa muita sobra nas laterais. Funciona com qualquer câmera, sem acessório. Com câmeras que já têm rastreamento próprio, como as OBSBOT, use um ou outro.
+
+<p align="center">
+  <img src="docs/enquadramento-automatico-webcam-mac.gif" alt="Enquadramento automático na webcam do Mac: sem e com o gimbal virtual do Prompter acompanhando o rosto em 9:16" width="420">
+  <br><sub>Simulação de movimento: a mesma cena com o enquadramento desligado e ligado.</sub>
 </p>
 
 <sub>Todas as imagens desta seção foram geradas pelo próprio Prompter, com o mesmo processamento da gravação, a partir de uma foto de exemplo criada por IA.</sub>
@@ -246,6 +278,8 @@ Os vídeos ficam em `~/Movies/Prompter/`.
 | Texto maior / menor | ⌘= / ⌘− |
 | Alternar formato | F |
 | Luz automática | L (⇧⌘L) |
+| Zoom digital (1× → 1,2× → 1,5× → 2× → 3×) | Z, pinça no trackpad, ⌥⌘= / ⌥⌘− / ⌥⌘0 |
+| Enquadramento automático | G (⇧⌘G) |
 | Posição do teleprompter | T |
 | Ocultar / mostrar teleprompter | H (⇧⌘H) |
 | Gravar / parar | R (⌘R) |
@@ -302,6 +336,10 @@ Sim. O Prompter recorta você do fundo com a segmentação de pessoas da Apple, 
 
 Ligue a luz automática do Prompter (tecla L). Ela mede o brilho do seu rosto várias vezes por segundo, corrige a exposição e clareia as sombras sem estourar o fundo. Para o resto, use os presets de cor ou ajuste contraste, brilho e sombras.
 
+### Como fazer a webcam do Mac seguir meu rosto?
+
+Ligue o enquadramento automático do Prompter (tecla G). Ele detecta seu rosto e move o recorte com suavidade para manter você no centro, com folga acima da cabeça para facilitar recortes. Funciona com qualquer câmera e brilha nos Reels em 9:16.
+
 ### Posso usar LUT na webcam do Mac?
 
 Sim. O Prompter aplica LUTs .cube na prévia e na gravação, em tempo real. Ele vem com cinco LUTs (Vibrante, Cinema, Noir, Pop e Midsommar), importa os seus e deixa ajustar a intensidade de 0 a 100% para um efeito sutil.
@@ -320,7 +358,7 @@ Sim. Escolha o modo Tela e grave a tela inteira, uma janela ou uma área, com a 
 - **`PrompterLayout` + `PrompterTextView`:** TextKit, karaokê e rolagem a 120 Hz.
 - **`LipSync`:** medição e correção da sincronia labial, nos dois sentidos (−500 a +500 ms). Para medir ou corrigir um arquivo: `--measure-sync ARQUIVO` ou `--fix-sync ARQUIVO`.
 - **`DemoRenderer`:** gera a animação deste README com o mesmo código do app (`--demo-render ROTEIRO VOZ PASTA`).
-- **`LookRenderer`:** gera as imagens de chroma key, luz, presets e LUTs passando uma foto pelo `FrameProcessor` (`--render-looks FOTO PASTA`).
+- **`LookRenderer`:** gera as imagens de chroma key, luz, presets, LUTs e zoom passando uma foto pelo `FrameProcessor` (`--render-looks FOTO PASTA`) e simula o enquadramento automático com movimento (`--render-framing-demo FOTO PASTA`).
 
 `@ViewState` é um alias de `SwiftUI.State` para compilar sem o plugin de macros, que só acompanha o Xcode.
 
@@ -355,11 +393,14 @@ Prompter foi criado por [Gui, do gui.marketing](https://gui.marketing).
   - face-aware auto exposure;
   - color adjustments with presets;
   - `.cube` LUTs (five included);
-  - chroma-key backgrounds and cel-shading or sticker styles.
+  - chroma-key backgrounds and cel-shading or sticker styles;
+  - digital zoom (1× to 3×, pinch on the trackpad);
+  - optional auto framing (virtual gimbal) that keeps your face centered, with room above your head.
 
 <p align="center">
   <img src="docs/chroma-key-mac-no-green-screen.jpg" alt="Chroma key on a Mac without a green screen: green, blue and red backgrounds plus cel-shading and sticker styles in Prompter" width="820">
   <br><img src="docs/auto-light-webcam-mac.jpg" alt="Auto light for a Mac webcam: the same dark frame without and with face-based exposure correction" width="820">
+  <br><img src="docs/auto-framing-webcam-mac.gif" alt="Auto framing on a Mac webcam: Prompter's virtual gimbal keeps the face centered in 9:16" width="420">
   <br><img src="docs/lut-intensity.gif" alt="Adjustable LUT intensity from 0 to 100% on a Mac webcam" width="640">
   <br><sub>Rendered by Prompter itself, with the same processing as a recording, from an AI-generated sample photo.</sub>
 </p>
@@ -386,6 +427,10 @@ To record Reels on a Mac, open Prompter, choose the 9:16 format and paste your s
 #### How do I record a video lesson on a Mac?
 
 To record a video lesson on a Mac, open Prompter, switch to Screen mode and pick a display, window or area. Your camera appears on top of the lesson. Read your script on the teleprompter or hide it with H, then record with R.
+
+#### How do I make my Mac webcam follow my face?
+
+Turn on Prompter's auto framing with the G key. It detects your face and smoothly moves the crop to keep you centered, with room above your head for easy cropping. It works with any camera and shines in vertical 9:16 Reels.
 
 #### Can I use chroma key on a Mac without a green screen?
 

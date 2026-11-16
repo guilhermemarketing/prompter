@@ -7,7 +7,9 @@ import AppKit
 /// Não abre câmera nem microfone e não toca nas preferências do usuário.
 @MainActor
 enum DemoRenderer {
-    static var isRequested: Bool { arguments != nil || LookRenderer.arguments != nil || syncArguments != nil }
+    static var isRequested: Bool {
+        arguments != nil || LookRenderer.arguments != nil || LookRenderer.framingDemoArguments != nil || syncArguments != nil
+    }
 
     /// `--measure-sync ARQUIVO.mov`: mede a sincronia labial em janelas de 60 s, sem alterar o arquivo.
     private static var syncArguments: URL? {
@@ -58,6 +60,14 @@ enum DemoRenderer {
                                  text.joined(separator: ", "), (estimate?.residual ?? .nan) * 1000,
                                  estimate?.isReliable == true ? "sim" : "não"))
                 }
+                NSApp.terminate(nil)
+            }
+            return
+        }
+        if let (input, output) = LookRenderer.framingDemoArguments {
+            Task { @MainActor in
+                do { try await LookRenderer.renderFramingDemo(input: input, output: output); print("framing: pronto em \(output.path)") }
+                catch { print("framing: falhou: \(error)") }
                 NSApp.terminate(nil)
             }
             return

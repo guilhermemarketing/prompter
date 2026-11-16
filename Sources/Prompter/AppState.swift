@@ -70,7 +70,7 @@ final class AppState: ObservableObject {
             MainActor.assumeIsolated { self?.prompter.setSpoken(position) }
         }
         prompter.onSeek = { [follower] index in follower.reset(to: index) }
-        monitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .scrollWheel]) { [weak self] event in
+        monitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .scrollWheel, .magnify]) { [weak self] event in
             let consumed = MainActor.assumeIsolated { self?.consume(event) ?? false }
             return consumed ? nil : event
         }
@@ -229,6 +229,38 @@ final class AppState: ObservableObject {
         }
     }
 
+    // MARK: Zoom e enquadramento
+
+    func setZoom(_ value: Double) {
+        capture.settings.zoom = min(max((value * 100).rounded() / 100, VideoSettings.zoomRange.lowerBound), VideoSettings.zoomRange.upperBound)
+    }
+
+    /// Próxima parada do selo (1× → 1,2× → 1,5× → 2× → 3× → 1×).
+    func cycleZoom() {
+        let current = capture.settings.zoom
+        setZoom(VideoSettings.zoomSteps.first { $0 > current + 0.01 } ?? 1)
+    }
+
+    /// Botões − e +: parada anterior ou seguinte, sem dar a volta.
+    func stepZoom(_ direction: Int) {
+        let current = capture.settings.zoom
+        let next = direction > 0
+            ? VideoSettings.zoomSteps.first { $0 > current + 0.01 }
+            : VideoSettings.zoomSteps.last { $0 < current - 0.01 }
+        if let next { setZoom(next) }
+    }
+
+    func toggleAutoFrame() {
+        capture.settings.autoFrame.toggle()
+        // Em 16:9 o recorte a 1× é a imagem inteira e não tem para onde andar: começa levemente aproximado.
+        if capture.settings.autoFrame, capture.settings.aspect == .landscape, capture.settings.zoom < 1.01 {
+            setZoom(VideoSettings.autoFrameStartZoom)
+        }
+        show(capture.settings.autoFrame
+             ? L("Enquadramento automático ligado: o quadro acompanha o seu rosto", "Auto framing on: the frame follows your face")
+             : L("Enquadramento automático desligado", "Auto framing off"), .info)
+    }
+
     func toggleAutoLight() {
         capture.settings.autoLight.toggle()
         show(capture.settings.autoLight ? L("Luz automática ligada: exposição guiada pelo rosto", "Auto light on: exposure follows your face") : L("Luz automática desligada", "Auto light off"), .info)
@@ -318,6 +350,13 @@ final class AppState: ObservableObject {
         // Popovers, menus e a janela de cores têm a própria janela: deixa os eventos passarem.
         if let window = event.window, window !== NSApp.mainWindow { return false }
 
+        if event.type == .magnify {
+            // Pinça no trackpad: zoom digital contínuo.
+            guard !prompter.isEditing else { return false }
+            setZoom(capture.settings.zoom * (1 + Double(event.magnification)))
+            return true
+        }
+
         if event.type == .scrollWheel {
             guard !prompter.isEditing else { return false }
             let factor: CGFloat = event.hasPreciseScrollingDeltas ? 1 : 12
@@ -351,6 +390,8 @@ final class AppState: ObservableObject {
             case "e": setEditing(true)
             case "v": toggleFollowVoice()
             case "l": toggleAutoLight()
+            case "z": cycleZoom()
+            case "g": toggleAutoFrame()
             case "t": if showPrompter { placement = placement.next } else { setTeleprompter(true) }
             case "h": toggleTeleprompter()
             case "f": if !capture.isRecording { capture.settings.aspect = capture.settings.aspect.next }

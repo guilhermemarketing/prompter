@@ -35,6 +35,23 @@ final class FrameProcessor {
     private var targetEV: Double = 0
     private var currentEV: Double = 0
 
+    // Enquadramento: zoom digital e gimbal virtual.
+    private let framingRequest = VNDetectFaceRectanglesRequest()
+    private let framingQueue = DispatchQueue(label: "marketing.gui.prompter.framing", qos: .userInitiated)
+    private let framingLock = NSLock()
+    private var framingBusy = false
+    private var lastFraming: CFTimeInterval = 0
+    /// Retângulo do maior rosto, normalizado (origem embaixo à esquerda, como no CIImage).
+    private var faceBox: CGRect?
+    private var faceSeen: CFTimeInterval = 0
+    private var currentZoom: Double = 1
+    /// Teto de zoom do enquadramento automático para a cabeça caber inteira (infinito sem rosto).
+    private var zoomCap: Double = .infinity
+    private var panAnchor: CGPoint?
+    private var panCenter: CGPoint?
+    private var panExtent: CGRect = .zero
+    private var lastFrameTime: CFTimeInterval = 0
+
     init() {
         if let device = MTLCreateSystemDefaultDevice() {
             context = CIContext(mtlDevice: device, options: [.cacheIntermediates: false, .name: "Prompter"])
@@ -89,7 +106,7 @@ final class FrameProcessor {
         }
 
         let output = size ?? settings.outputSize
-        let crop = VideoSettings.centerCrop(extent, aspect: output.width / output.height)
+        let crop = framingCrop(extent: extent, aspect: output.width / output.height, settings: settings, source: source)
         let scale = output.width / crop.width
         image = image.cropped(to: crop)
             .transformed(by: CGAffineTransform(translationX: -crop.minX, y: -crop.minY))
@@ -110,6 +127,109 @@ final class FrameProcessor {
         let task = try? context.startTask(toRender: image, from: CGRect(origin: .zero, size: output),
                                           to: destination, at: .zero)
         return Frame(buffer: buffer, task: task)
+    }
+
+    // MARK: Enquadramento
+
+    /// Recorte do quadro: formato escolhido, zoom digital suavizado e, com o enquadramento automático,
+    /// centro que segue o rosto com zona morta (não persegue pequenos movimentos) e inércia (~0,5 s).
+    private func framingCrop(extent: CGRect, aspect: CGFloat, settings: VideoSettings, source: CVPixelBuffer) -> CGRect {
+        let base = VideoSettings.centerCrop(extent, aspect: aspect)
+        let now = CACurrentMediaTime()
+        let dt = lastFrameTime == 0 ? 1.0 / 30 : min(max(now - lastFrameTime, 0.001), 0.1)
+        lastFrameTime = now
+        if panExtent != extent { panExtent = extent; panCenter = nil; panAnchor = nil; zoomCap = .infinity }
+
+        // Rosto em pixels do quadro (origem embaixo, como no CIImage).
+        var face: CGRect?
+        if settings.autoFrame {
+            requestFraming(for: source, now: now)
+            if let box = framingLock.withLock({ now - faceSeen < 2.5 ? faceBox : nil }) {
+                face = CGRect(x: extent.minX + box.minX * extent.width, y: extent.minY + box.minY * extent.height,
+                              width: box.width * extent.width, height: box.height * extent.height)
+            }
+            // Zoom máximo em que a cabeça inteira cabe, com folga em cima e um pouco do pescoço embaixo.
+            // Só muda com variação real do tamanho do rosto (>8%), para o zoom não "respirar".
+            if let face {
+                let needed = (face.height * (1 + Self.hairAboveFace + Self.neckBelowFace)) / (1 - Self.headroom)
+                let cap = max(1, Double(base.height / needed))
+                if zoomCap.isInfinite || abs(cap - zoomCap) / zoomCap > 0.08 { zoomCap = cap }
+            }
+        } else {
+            zoomCap = .infinity
+            panAnchor = nil
+        }
+
+        let targetZoom = min(settings.zoom, zoomCap)
+        currentZoom += (targetZoom - currentZoom) * (1 - exp(-dt * (settings.autoFrame ? 3 : 9)))
+        if abs(targetZoom - currentZoom) < 0.0005 { currentZoom = targetZoom }
+        if currentZoom <= 1.0005, !settings.autoFrame, panCenter == nil { return base }
+
+        let size = CGSize(width: base.width / currentZoom, height: base.height / currentZoom)
+        let middle = CGPoint(x: base.midX, y: base.midY)
+
+        var target = middle
+        if settings.autoFrame {
+            if let face {
+                // Olhos no terço superior do recorte, mas sempre com folga acima da cabeça
+                // (o retângulo do Vision vai da testa ao queixo; o cabelo sobe até ~50% da altura do rosto).
+                let eyesY = face.minY + face.height * 0.62
+                let headTop = face.maxY + face.height * Self.hairAboveFace
+                let desired = CGPoint(x: face.midX,
+                                      y: max(eyesY - size.height / 6, headTop + size.height * Self.headroom - size.height / 2))
+                if let anchor = panAnchor, abs(desired.x - anchor.x) < size.width * 0.06,
+                   abs(desired.y - anchor.y) < size.height * 0.06 {
+                    // Dentro da zona morta: mantém o enquadramento parado.
+                } else {
+                    panAnchor = desired
+                }
+            }
+            target = panAnchor ?? middle
+        }
+
+        var center = panCenter ?? middle
+        center.x += (target.x - center.x) * (1 - exp(-dt * 2.6))
+        center.y += (target.y - center.y) * (1 - exp(-dt * 2.6))
+        if !settings.autoFrame, abs(center.x - middle.x) < 0.5, abs(center.y - middle.y) < 0.5 {
+            panCenter = nil
+            center = middle
+        } else {
+            panCenter = center
+        }
+
+        let x = min(max(center.x - size.width / 2, extent.minX), extent.maxX - size.width)
+        let y = min(max(center.y - size.height / 2, extent.minY), extent.maxY - size.height)
+        return CGRect(x: x, y: y, width: size.width, height: size.height)
+    }
+
+    /// Altura estimada do cabelo acima do retângulo do rosto, em alturas de rosto.
+    static let hairAboveFace: CGFloat = 0.5
+    /// Folga acima da cabeça, em fração da altura do recorte (espaço para recortes na edição).
+    static let headroom: CGFloat = 0.08
+    /// Pescoço que fica no quadro abaixo do queixo, em alturas de rosto (limita o zoom do enquadramento automático).
+    static let neckBelowFace: CGFloat = 0.3
+
+    /// Detecta o maior rosto até ~10 vezes por segundo, fora da fila de vídeo.
+    private func requestFraming(for source: CVPixelBuffer, now: CFTimeInterval) {
+        let start = framingLock.withLock { () -> Bool in
+            guard !framingBusy, now - lastFraming > 0.1 else { return false }
+            framingBusy = true
+            lastFraming = now
+            return true
+        }
+        guard start else { return }
+        framingQueue.async { [self] in
+            try? VNImageRequestHandler(cvPixelBuffer: source).perform([framingRequest])
+            let face = framingRequest.results?.filter { $0.confidence > 0.5 }
+                .max { $0.boundingBox.width * $0.boundingBox.height < $1.boundingBox.width * $1.boundingBox.height }
+            framingLock.withLock {
+                if let box = face?.boundingBox {
+                    faceBox = box
+                    faceSeen = CACurrentMediaTime()
+                }
+                framingBusy = false
+            }
+        }
     }
 
     // MARK: Luz automática

@@ -40,6 +40,14 @@ struct PrompterApp: App {
                     .keyboardShortcut("v", modifiers: [.command, .shift])
                 Button(L("Luz automática", "Auto light")) { app.toggleAutoLight() }
                     .keyboardShortcut("l", modifiers: [.command, .shift])
+                Button(L("Enquadramento automático", "Auto framing")) { app.toggleAutoFrame() }
+                    .keyboardShortcut("g", modifiers: [.command, .shift])
+                Button(L("Aproximar", "Zoom In")) { app.stepZoom(1) }
+                    .keyboardShortcut("=", modifiers: [.command, .option])
+                Button(L("Afastar", "Zoom Out")) { app.stepZoom(-1) }
+                    .keyboardShortcut("-", modifiers: [.command, .option])
+                Button(L("Zoom 1×", "Zoom 1×")) { app.setZoom(1) }
+                    .keyboardShortcut("0", modifiers: [.command, .option])
                 Button(app.showPrompter ? L("Ocultar teleprompter", "Hide teleprompter") : L("Mostrar teleprompter", "Show teleprompter")) { app.toggleTeleprompter() }
                     .keyboardShortcut("h", modifiers: [.command, .shift])
                 Picker("Teleprompter", selection: $app.placement) {

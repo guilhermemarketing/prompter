@@ -14,6 +14,45 @@ enum LookRenderer {
 
     private static let context = CIContext()
 
+    /// `--render-framing-demo FOTO PASTA`: simula a pessoa se movendo no quadro (a foto desliza) e
+    /// grava, quadro a quadro, a saída 9:16 sem e com o enquadramento automático.
+    static var framingDemoArguments: (input: URL, output: URL)? {
+        let args = CommandLine.arguments
+        guard let i = args.firstIndex(of: "--render-framing-demo"), args.count > i + 2 else { return nil }
+        return (URL(fileURLWithPath: args[i + 1]), URL(fileURLWithPath: args[i + 2], isDirectory: true))
+    }
+
+    static func renderFramingDemo(input: URL, output: URL) async throws {
+        guard let photo = CIImage(contentsOf: input) else { throw CocoaError(.fileReadCorruptFile) }
+        let extent = photo.extent
+        for (name, auto) in [("desligado", false), ("ligado", true)] {
+            let folder = output.appendingPathComponent(name, isDirectory: true)
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            var settings = VideoSettings()
+            settings.aspect = .portrait
+            settings.autoFrame = auto
+            let processor = FrameProcessor()
+            let frames = 30 * 9
+            for frame in 0..<frames {
+                // A pessoa vai da direita para a esquerda e volta (9 s), com uma pausa no meio.
+                let t = Double(frame) / Double(frames)
+                let phase = t < 0.4 ? t / 0.4 : t < 0.55 ? 1 : 1 - (t - 0.55) / 0.45
+                let eased = (1 - cos(phase * .pi)) / 2
+                let window = CGRect(x: extent.minX + extent.width * 0.32 * eased, y: extent.minY,
+                                    width: extent.width * 0.68, height: extent.height)
+                let source = try buffer(from: photo.cropped(to: window))
+                let result = processor.process(source, settings: settings)
+                result?.wait()
+                if let result {
+                    try context.writePNGRepresentation(of: CIImage(cvPixelBuffer: result.buffer),
+                                                       to: folder.appendingPathComponent(String(format: "f%04d.png", frame)),
+                                                       format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+                }
+                try await Task.sleep(for: .milliseconds(33))
+            }
+        }
+    }
+
     static func render(input: URL, output: URL) async throws {
         guard let photo = CIImage(contentsOf: input) else { throw CocoaError(.fileReadCorruptFile) }
         try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
@@ -25,11 +64,27 @@ enum LookRenderer {
         base.resolution = .hd
         base.aspect = .landscape
 
-        func look(_ name: String, from buffer: CVPixelBuffer? = nil, _ change: (inout VideoSettings) -> Void) async throws {
+        func look(_ name: String, from buffer: CVPixelBuffer? = nil, frames: Int = 90, _ change: (inout VideoSettings) -> Void) async throws {
             var settings = base
             change(&settings)
-            try await save(buffer ?? source, settings: settings, to: output.appendingPathComponent("\(name).png"))
+            try await save(buffer ?? source, settings: settings, frames: frames, to: output.appendingPathComponent("\(name).png"))
         }
+
+        // Zoom digital e enquadramento automático (rosto deslocado para a esquerda do quadro).
+        for zoom in [1.0, 1.5, 2.0] {
+            try await look(String(format: "zoom-%.1fx", zoom)) { $0.zoom = zoom }
+        }
+        let extent = photo.extent
+        let offCenter = try buffer(from: photo.cropped(to: CGRect(x: extent.minX + extent.width * 0.3, y: extent.minY,
+                                                                   width: extent.width * 0.7, height: extent.height)))
+        try await look("enquadramento-desligado-16x9", from: offCenter) { _ in }
+        try await look("enquadramento-ligado-16x9", from: offCenter, frames: 200) { $0.autoFrame = true; $0.zoom = VideoSettings.autoFrameStartZoom }
+        try await look("enquadramento-desligado-9x16", from: offCenter) { $0.aspect = .portrait }
+        try await look("enquadramento-ligado-9x16", from: offCenter, frames: 200) { $0.aspect = .portrait; $0.autoFrame = true }
+        // Rosto grande no quadro (perto da câmera), com zoom: a cabeça precisa caber com folga em cima.
+        try await look("enquadramento-ligado-9x16-2x", from: offCenter, frames: 200) { $0.aspect = .portrait; $0.autoFrame = true; $0.zoom = 2 }
+        try await look("enquadramento-ligado-16x9-2x", from: offCenter, frames: 200) { $0.autoFrame = true; $0.zoom = 2 }
+        if CommandLine.arguments.contains("--only-framing") { return }
 
         try await look("original") { _ in }
         for background in [ChromaBackground.green, .blue, .red] {
@@ -53,10 +108,10 @@ enum LookRenderer {
 
     /// Processa a mesma foto várias vezes: a máscara de pessoa e a medição do rosto rodam em
     /// segundo plano e a exposição assenta aos poucos, como nos primeiros segundos de câmera.
-    private static func save(_ source: CVPixelBuffer, settings: VideoSettings, to url: URL) async throws {
+    private static func save(_ source: CVPixelBuffer, settings: VideoSettings, frames: Int = 90, to url: URL) async throws {
         let processor = FrameProcessor()
         var last: FrameProcessor.Frame?
-        for _ in 0..<90 {
+        for _ in 0..<frames {
             last = processor.process(source, settings: settings)
             last?.wait()
             try await Task.sleep(for: .milliseconds(15))
